@@ -4,12 +4,12 @@ class CreateTeams < ActiveRecord::Migration
       t.string  :uid
       t.string  :name
       t.string	:slug
-      t.string  :owner_uid
+      t.integer  :owner_id
 
       t.timestamps
     end
 
-    add_index :teams, :owner_uid
+    add_index :teams, :owner_id
     add_index :teams, :slug, unique: true
   end
 end

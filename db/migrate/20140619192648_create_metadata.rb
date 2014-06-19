@@ -2,7 +2,7 @@ class CreateMetadata < ActiveRecord::Migration
   def change
     create_table :metadata do |t|
     	t.string 	:uid
-    	t.string  :user_uid
+    	t.integer  :owner_id
     	t.string 	:name
     	t.integer :meta_type
     	t.integer :meta_sub_type

@@ -11,14 +11,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140619200021) do
+ActiveRecord::Schema.define(version: 20140619201224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "memberships", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "team_id"
+    t.integer  "permission", default: 1
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "memberships", ["permission"], name: "index_memberships_on_permission", using: :btree
+  add_index "memberships", ["team_id"], name: "index_memberships_on_team_id", using: :btree
+  add_index "memberships", ["user_id"], name: "index_memberships_on_user_id", using: :btree
+
   create_table "metadata", force: true do |t|
     t.string   "uid"
-    t.string   "user_uid"
+    t.integer  "owner_id"
     t.string   "name"
     t.integer  "meta_type"
     t.integer  "meta_sub_type"
@@ -46,6 +58,7 @@ ActiveRecord::Schema.define(version: 20140619200021) do
   add_index "metadata", ["username"], name: "index_metadata_on_username", using: :btree
 
   create_table "staffs", force: true do |t|
+    t.string   "uid"
     t.string   "name"
     t.string   "email",                  default: "", null: false
     t.integer  "permission"
@@ -73,18 +86,19 @@ ActiveRecord::Schema.define(version: 20140619200021) do
   add_index "staffs", ["email"], name: "index_staffs_on_email", unique: true, using: :btree
   add_index "staffs", ["permission"], name: "index_staffs_on_permission", using: :btree
   add_index "staffs", ["reset_password_token"], name: "index_staffs_on_reset_password_token", unique: true, using: :btree
+  add_index "staffs", ["uid"], name: "index_staffs_on_uid", unique: true, using: :btree
   add_index "staffs", ["unlock_token"], name: "index_staffs_on_unlock_token", unique: true, using: :btree
 
   create_table "teams", force: true do |t|
     t.string   "uid"
     t.string   "name"
     t.string   "slug"
-    t.string   "owner_uid"
+    t.integer  "owner_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "teams", ["owner_uid"], name: "index_teams_on_owner_uid", using: :btree
+  add_index "teams", ["owner_id"], name: "index_teams_on_owner_id", using: :btree
   add_index "teams", ["slug"], name: "index_teams_on_slug", unique: true, using: :btree
 
   create_table "users", force: true do |t|
