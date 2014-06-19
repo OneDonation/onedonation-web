@@ -2,6 +2,7 @@ class DeviseCreateStaffs < ActiveRecord::Migration
   def change
     create_table(:staffs) do |t|
       ## Database authenticatable
+      t.string :uid
       t.string :name
       t.string :email,              null: false, default: ""
       t.integer :permission
@@ -36,6 +37,7 @@ class DeviseCreateStaffs < ActiveRecord::Migration
       t.timestamps
     end
 
+    add_index :staffs, :uid,                unique: true
     add_index :staffs, :email,                unique: true
     add_index :staffs, :reset_password_token, unique: true
     add_index :staffs, :confirmation_token,   unique: true
