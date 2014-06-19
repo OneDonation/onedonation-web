@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  include Tokenable
   # Gem Dependencies 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
