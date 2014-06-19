@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140619184047) do
+ActiveRecord::Schema.define(version: 20140619192648) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,35 @@ ActiveRecord::Schema.define(version: 20140619184047) do
   add_index "staffs", ["permission"], name: "index_staffs_on_permission", using: :btree
   add_index "staffs", ["reset_password_token"], name: "index_staffs_on_reset_password_token", unique: true, using: :btree
   add_index "staffs", ["unlock_token"], name: "index_staffs_on_unlock_token", unique: true, using: :btree
+
+  create_table "user_meta", force: true do |t|
+    t.string   "uid"
+    t.string   "user_uid"
+    t.string   "name"
+    t.integer  "meta_type"
+    t.integer  "meta_sub_type"
+    t.string   "custom"
+    t.date     "date"
+    t.string   "street"
+    t.string   "apt_suite"
+    t.string   "city"
+    t.string   "state"
+    t.string   "postal_code"
+    t.string   "country"
+    t.string   "email_address"
+    t.string   "number"
+    t.string   "username"
+    t.string   "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "user_meta", ["email_address"], name: "index_user_meta_on_email_address", using: :btree
+  add_index "user_meta", ["meta_sub_type"], name: "index_user_meta_on_meta_sub_type", using: :btree
+  add_index "user_meta", ["meta_type"], name: "index_user_meta_on_meta_type", using: :btree
+  add_index "user_meta", ["number"], name: "index_user_meta_on_number", using: :btree
+  add_index "user_meta", ["uid"], name: "index_user_meta_on_uid", unique: true, using: :btree
+  add_index "user_meta", ["username"], name: "index_user_meta_on_username", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "uid"

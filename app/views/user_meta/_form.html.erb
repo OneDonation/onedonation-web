@@ -1,0 +1,17 @@
+<%= form_for(@user_metum) do |f| %>
+  <% if @user_metum.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user_metum.errors.count, "error") %> prohibited this user_metum from being saved:</h2>
+
+      <ul>
+      <% @user_metum.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

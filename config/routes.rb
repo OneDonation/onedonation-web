@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
 
 
+  resources :user_meta
+
   devise_for :users, skip: [:sessions, :registrations]
 
   as :user do
