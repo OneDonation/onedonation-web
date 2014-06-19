@@ -1,4 +1,29 @@
 Rails.application.routes.draw do
+
+
+  devise_for :users, skip: [:sessions, :registrations]
+
+  as :user do
+    get '/login' => 'devise/sessions#new', as: :new_user_session
+    post '/login' => 'devise/sessions#create', as: :user_session
+    delete '/logout' => 'devise/sessions#destroy', as: :destroy_user_session
+    get '/get-started' => 'devise/registrations#new', as: :new_user_registration
+    get '/get-started' => 'devise/registrations#create', as: :user_registration
+  end
+
+  devise_for :staffs, skip: [:sessions]
+  constraints subdomain: "admin" do
+    as :staff do
+      get '/sign-in' => 'devise/sessions#new', as: :new_staff_session
+      post '/sign-in' => 'devise/sessions#create', as: :staff_session
+      delete '/sign-out' => 'devise/sessions#destroy', as: :destroy_staff_session
+
+      get "/dashboard" => "admin/staff#dashboard", as: :staff_dashboard
+    end
+  end
+
+  root "application#index"
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

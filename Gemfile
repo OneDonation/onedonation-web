@@ -28,7 +28,8 @@ gem "money-rails"
 
 # Development
 group :development, :test do 
-	gem 'byebug'
+	gem "sqlite3"
+	gem "byebug"
 	gem "spring"
 	gem "better_errors"
   gem "binding_of_caller"
