@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class UserMetumTest < ActiveSupport::TestCase
+class MetadataTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
