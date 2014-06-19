@@ -50,7 +50,7 @@ ActiveRecord::Schema.define(version: 20140619184047) do
     t.string   "uid"
     t.string   "prefix"
     t.string   "first_name"
-    t.string   "midddle_name"
+    t.string   "middle_name"
     t.string   "last_name"
     t.string   "suffix"
     t.integer  "age"

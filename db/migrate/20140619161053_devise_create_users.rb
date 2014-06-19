@@ -4,7 +4,7 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.string  :uid
       t.string  :prefix
       t.string  :first_name
-      t.string  :midddle_name
+      t.string  :middle_name
       t.string  :last_name
       t.string  :suffix
       t.integer :age
