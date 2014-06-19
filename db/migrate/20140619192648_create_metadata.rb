@@ -1,6 +1,6 @@
-class CreateUserMeta < ActiveRecord::Migration
+class CreateMetadata < ActiveRecord::Migration
   def change
-    create_table :user_meta do |t|
+    create_table :metadata do |t|
     	t.string 	:uid
     	t.string  :user_uid
     	t.string 	:name
@@ -22,11 +22,11 @@ class CreateUserMeta < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :user_meta, :uid,                unique: true
-    add_index :user_meta, :meta_type
-    add_index :user_meta, :meta_sub_type
-    add_index :user_meta, :email_address
-    add_index :user_meta, :number
-    add_index :user_meta, :username
+    add_index :metadata, :uid,                unique: true
+    add_index :metadata, :meta_type
+    add_index :metadata, :meta_sub_type
+    add_index :metadata, :email_address
+    add_index :metadata, :number
+    add_index :metadata, :username
   end
 end
