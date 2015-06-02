@@ -1,36 +1,61 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 # Rails/Ruby
-ruby "2.1.2"
-gem "rails", "4.1.0"
+ruby '2.2.2'
+gem 'rails', '4.2.3'
 
 # Rails Defaults
-gem "sass-rails", "~> 4.0.3"
-gem "uglifier", ">= 1.3.0"
-gem "coffee-rails", "~> 4.0.0"
-gem "jquery-rails"
-gem "turbolinks"
-gem "jbuilder", "~> 2.0"
+gem 'sass-rails'
+gem 'uglifier'
+gem 'coffee-rails'
+gem 'jquery-rails'
+gem 'turbolinks'
+gem 'jquery-turbolinks'
+gem 'jbuilder'
+
+# UI/Structure
+gem 'bootstrap-sass'
+gem 'bitters'
+gem 'bourbon'
+gem 'breadcrumbs_on_rails'
+gem 'coffeebeans'
+gem 'font-awesome-sass'
+gem 'neat'
+gem 'refills'
+gem 'simple_form'
+
+gem 'country_select'
+gem 'kaminari'
+gem 'kaminari-bootstrap'
 
 # Authentication
-gem "devise"
+gem 'devise'
+gem 'omniauth-oauth2'
+gem 'omniauth-stripe-connect'
 
 # DB
-gem "pg"
+gem 'pg'
+gem 'faker'
+gem 'carmen'
+gem 'carmen-rails'
+gem 'chronic'
+gem 'attr_encrypted'
 
 # API
-gem "grape"
+gem 'grape'
 gem 'grape-jbuilder'
 
 # Charges
-gem "stripe"
-gem "stripe_event"
-gem "money-rails"
+gem 'stripe'
+gem 'stripe_event'
+gem 'money-rails'
 
 # Development
-group :development, :test do 
-	gem "sqlite3"
-	gem "byebug"
-	gem "spring"
-	gem "better_errors"
-  gem "binding_of_caller"
+group :development, :test do
+	gem 'sqlite3'
+	gem 'byebug'
+	gem 'spring'
+	gem 'better_errors'
+  gem 'binding_of_caller'
+  gem 'letter_opener'
+  gem 'quiet_assets'
 end

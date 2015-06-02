@@ -1,0 +1,68 @@
+<%= form_for(@account) do |f| %>
+  <% if @account.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@account.errors.count, "error") %> prohibited this account from being saved:</h2>
+
+      <ul>
+      <% @account.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <div class="field">
+    <%= f.label :email %><br>
+    <%= f.text_field :email %>
+  </div>
+
+  <div class="field">
+    <%= f.label :default_card %><br>
+    <%= f.text_field :default_card %>
+  </div>
+
+  <div class="field">
+    <%= f.label :delinquent %><br>
+    <%= f.check_box :delinquent %>
+  </div>
+
+  <div class="field">
+    <%= f.label :discount %><br>
+    <%= f.text_area :discount %>
+  </div>
+
+  <div class="field">
+    <%= f.label :plan_id %><br>
+    <%= f.text_field :plan_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :plan_amount %><br>
+    <%= f.number_field :plan_amount %>
+  </div>
+
+  <div class="field">
+    <%= f.label :plan_currency %><br>
+    <%= f.text_field :plan_currency %>
+  </div>
+
+  <div class="field">
+    <%= f.label :plan_interval %><br>
+    <%= f.text_field :plan_interval %>
+  </div>
+
+  <div class="field">
+    <%= f.label :plan_interval_count %><br>
+    <%= f.text_field :plan_interval_count %>
+  </div>
+
+  <div class="field">
+    <%= f.label :plan_name %><br>
+    <%= f.text_field :plan_name %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -1,14 +1,49 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>DonationsApi</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
+	<head>
+	  <title>Donations.io</title>
+	  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+	  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+	  <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+	  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+		<!-- <link rel="stylesheet" href="http://basehold.it/24"> -->
 
-<%= yield %>
-
-</body>
+	  <%= csrf_meta_tags %>
+	  <meta name = "viewport" content = "width = device-width,initial-scale = 1.0, minimal-ui">
+	</head>
+	<body>
+		<header class="header">
+			<div class="container">
+				<nav class="nav">
+					<%= link_to "D", "#", class: "logo" %>
+					<%= link_to "Donations", donations_path, class: active_classes(donations_path) %>
+					<%= link_to "Fundraisers", fundraisers_path, class: active_classes(fundraisers_path) %>
+					<%= link_to "Contacts", "#", class: "" %>
+					<%= link_to "Activity", "#", class: "" %>
+				</nav>
+				<nav class="nav logout-nav">
+					<%= link_to "#", class: "account-switcher" do %>
+						<%= current_user.name("human") %> <%= icon("chevron-down") %>
+					<% end %>
+					<ul id="account_switcher" class="hidden">
+						<li><a href="">test</a></li>
+						<li><a href="">two</a></li>
+					</ul>
+					<%= link_to "|", "#", class: "divider" %>
+					<%= link_to destroy_user_session_path do %>
+						<%= icon("sign-out", nil, style: "margin-right:0.5em") %> Logout
+					<% end %>
+				</nav>
+				<%= render "page_header" %>
+			</div>
+		</header>
+		<div class="content">
+			<%= render "content_header" %>
+			<div class="content-body">
+				<div class="container">
+					<%= yield %>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

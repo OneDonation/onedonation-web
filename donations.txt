@@ -3,171 +3,205 @@
 
 Plans
 -----------------------
-3% Individual
-	- Individual Raising Money
-	- Unlimited Trips/Causes/Events
-	- Unlimited Contacts/Donors
-1% + $49/mo Basic Team
-	- One Team
-	- Unlimted users
-	- Unlimited Trips/Causes/Events
-	- Unlimited Contacts/Donors
-0% + $199/mo Professional
-	- Up to 30 teams
-	- Unlimited Trips/Causes/Events
-	- Unlimited Contacts/Donors
+  INDIVIDUALS
+  -----------------------
+    3% of Donations
+      - Unlimited Trips/Causes/Events
+      - Single trip participant
+    1% + $10/mo
+      - Unlimited Trips/Causes/Events
+    0% + $15/mo
+      - Unlimited Trips/Causes/Events
 
+  ORGANIZATION
+  -----------------------
+    3% of donations
+      - Unlimited Trips, Causes, or Fund raising events
+      - Unlimited Team Members
+      - Non-profit Tax deduction receipts
+    1% + $99/mo
+      - Unlimited Trips, Causes, or Fund raising events
+      - Unlimited Team Members
+      - Unlimited Contacts/Donors
+      - Non-profit Tax deduction receipts
+    0% + $199/mo Enterprise
+      - Unlimited Teams
+      - Unlimited Team Members
+      - Unlimited Trips/Causes/Events
+      - Unlimited Contacts/Donors
+      - Non-profit Tax deduction receipts
 
 
 Signup flow
 -----------------------
-	Individual
-		- Signs up
-			- name
-			- email
-			- contact info
-			- credit cards
-		Creates a Campaign
-			- Choose Donation type: [:ongoing, :timeline]
-			- Choose a donation deadline (only for timeline style campaigns)
-			- Name (accessed via /username/cause-name)
-			- Description
-			- Header image (additional style, colors maybe?)
-			- Creates the form
-				- option to add fields outside of defaults
-			- Publish cause
-			Thoughts:
-				Does this event need tickets?
-				Do I want to deal with tickets?
-	Team
-		- Signs Up
-		- Give team a name
-		- Setup first team campaign
-		- Invite users to team
+  Individual
+    - Signs up
+      - name
+      - email
+      - contact info
+      - credit cards
+    Creates a Fund
+      - Choose Donation type: [:ongoing, :timeline]
+      - Choose a donation deadline (only for timeline style campaigns)
+      - Name (accessed via /username/cause-name)
+      - Description
+      - Header image (additional style, colors maybe?)
+      - Creates the form
+        - option to add fields outside of defaults
+      - Publish cause
+      Thoughts:
+        Does this event need tickets?
+        Do I want to deal with tickets?
+  Team
+    - Signs Up
+    - Give team a name
+    - Setup first team campaign
+    - Invite users to team
 
 
 
 UI
 -----------------------
 - Dashboard
-	- Active Campaigns
-	- Recent Donations
-	- Recent Comments
+  - Active Campaigns
+  - Recent Donations
+  - Recent Comments
 - Campaigns
-	- List campaigns
-	- Create a new campaigns
+  - List campaigns
+  - Create a new campaigns
+  - show
+    - Edit Name / goal / avatar / description
+
 - Team
-	- List
-	- Edit Team Members
+  - List
+  - Edit Team Members
 - Donors
-	- List Donors
-	- Edit Donors
-	- Epxort Donors
+  - List Donors
+  - Edit Donors
+  - Export Donors
+
+- Settings
+  - Jonathan Simmons
+    - Profile
+    - Billing
+    - Emails
+  - Team One
+
+  - Cards
 rake db:setup
 
 Models
 -----------------------
 - Staff
-	- Name 
-	- Email
-	- Permission
+  - Name
+  - Email
+  - Permission
+
+
+
+- Account
+=======================
+  - owner_id
+  - stripe_customer_id
+
+
 
 
 - User
 =======================
-	- Prefix - String
-	- First_name - String
-	- Middle_name - String
-	- Last_name - String
-	- Suffix - String
-	- Age - Integer
-	- Gender - Enum
+  - Prefix - String
+  - First_name - String
+  - Middle_name - String
+  - Last_name - String
+  - Suffix - String
+  - Age - Integer
+  - Gender - Enum
 
-	- Address
-	=======================
-		- Name - String
-		- Type - Enum [:home, :work, :custom]
-		- Street - String
-		- Apt - String
-		- City - String
-		- State - String
-		- Postal Code - String
-		- Country - String
-		- user_uid - String
-	- Email
-	=======================
-		- Name - String
-		- Type - Enum [:home, :work, :custom]
-		- Address - String
-		- Custom - String
-		- user_uid - String
+  - Address
+  =======================
+    - Name - String
+    - Type - Enum [:home, :work, :custom]
+    - Street - String
+    - Apt - String
+    - City - String
+    - State - String
+    - Postal Code - String
+    - Country - String
+    - user_uid - String
+  - Email
+  =======================
+    - Name - String
+    - Type - Enum [:home, :work, :custom]
+    - Address - String
+    - Custom - String
+    - user_uid - String
 
-	- Phone
-	=======================
-		- Name - String
-		- Type - Enum [:home, :work, :custom]
-		- Number - String
-		- Custom - String
-		- user_uid - String
+  - Phone
+  =======================
+    - Name - String
+    - Type - Enum [:home, :work, :custom]
+    - Number - String
+    - Custom - String
+    - user_uid - String
 
-	- Social
-	=======================
-		- Type - Enum [:website, :facebook, :twitter, :linkedin]
-		- Value - String
-		- user_uid - String
+  - Social
+  =======================
+    - Type - Enum [:website, :facebook, :twitter, :linkedin]
+    - Value - String
+    - user_uid - String
 
 - Team
 =======================
-	- Name
-	- uid
-	- owner_uid
+  - Name
+  - uid
+  - owner_uid
 
 - Members
 =======================
-	- user_uid
-	- team_uid
-	- permission - Enum [admin, member]
+  - user_uid
+  - team_uid
+  - permission - Enum [admin, member]
 
-- Cause
+- Causelate
 =======================
-	- Name - String
-	- Type - Enum [political, personal]
-	- Description - TextArea
-	- End Date - Date
-	- Financial Goal - Integer
+  - Name - String
+  - Type - Enum [political, personal]
+  - Description - TextArea
+  - End Date - Date
+  - Financial Goal - Integer
 
 - Form
 =======================
-	- Name - String
-	- cause_id - String
-	- header_img ?
-	- colors ?
-	- cause_uid - String
+  - Name - String
+  - cause_id - String
+  - header_img ?
+  - colors ?
+  - cause_uid - String
 
 
 - Fields
 =======================
-	- name - String
+  - name - String
   - type - Enum [text, textarea, date, select, email, phone, checkboxes, radio]
-  - required	- Boolean
-	- form_id - String
-	- form_uid - String
+  - required  - Boolean
+  - form_id - String
+  - form_uid - String
 
 
 - Pledges ?
 =======================
-	- user_id - String
-	- amount - Integer
-	- cause_uid - String
+  - user_id - String
+  - amount - Integer
+  - cause_uid - String
 
 
 - Donation
 =======================
-	- id - Integer
-	- uid - String
-	- stripe_charge_id - String
-	- user_uid - String
-	- cause_uid - String
+  - id - Integer
+  - uid - String
+  - stripe_charge_id - String
+  - user_uid - String
+  - cause_uid - String
 
 
 
@@ -183,6 +217,6 @@ Models
 
 Marketing
 -----------------------
-	Mission Trip Page
-		- Showcase the individual or team aspects of fund raising.
-	Non-Profit Page
+  Mission Trip Page
+    - Showcase the individual or team aspects of fund raising.
+  Non-Profit Page

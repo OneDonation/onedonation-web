@@ -1,0 +1,182 @@
+
+// Module
+// ---------------------------------------------------------------- //
+// Features
+// - Namespaced instead of nested, for faster selection.
+// - No element (<ul>,<li>, <a>) styling, for faster selection.
+// - Styled off of classes, for maximum overrides.
+//
+// How to use:
+// - Rename "module" to whatever it is you're describing.
+// - Don't need something? Delete it.
+// - Add your own super descriptive and helpful comments.
+// --------------------------------------------------------------- //
+.module {
+	&.module-plain {
+		.module-body {
+			border: 0;
+			padding: 0;
+		}
+	}
+	&.module-sidebar {
+		margin-bottom:1.475em;
+		.module-header {
+			.module-title {
+			  color: #999;
+			  margin: 0;
+			  padding: 0.3256em 0.75em 0.425em;
+			  background-color: #f9f9f9;
+			  border: 1px solid $lighter-gray;
+			  border-radius: 4px 4px 0 0;
+			  line-height: 1.5;
+			  font-size: 1em;
+			}
+		}
+		.module-body {
+			padding:0;
+			border-top:0;
+			nav {
+				a {
+					display: block;
+					padding: 0.5em 1em;
+				  border-bottom: $base-border;
+				  color: $light-gray;
+			    box-shadow: none;
+          transition: all .3s linear;
+          font-size: .875em;
+          &:last-child {
+				  	border-bottom:0;
+				  }
+			    &:hover {
+			    	color: $gray;
+				  	box-shadow: 3px 0 0 $lighter-gray inset;
+			    }
+				  &.active {
+				  	background-color:#fdfdfd;
+				  	box-shadow: 3px 0 0 $green inset;
+				  	color: $gray;
+				  }
+				}
+			}
+		}
+	}
+	.module-header {
+		.module-title {
+		  color: #999;
+		  margin: 0;
+		  padding: 0.3256em 0.75em 0.425em;
+		  background-color: #f9f9f9;
+		  border: 1px solid $lighter-gray;
+		  border-radius: 4px 4px 0 0;
+		  line-height: 1.5;
+		  font-size:1em;
+		}
+		// .module-title {
+		// 	margin:0 0 1.05em;
+		//   border-bottom: 1px solid #dedede;
+		//   padding-bottom: 0.05em;
+		// }
+		.nav-tabs {
+			@include flexbox($flex-flow: row nowrap);
+
+			margin-bottom:-2px;
+			background: #fff;
+			border-radius: 4px 4px 0 0;
+			height: 75px;
+			border: 1px solid $lighter-gray;
+			> li {
+				-webkit-flex: 1;
+			  -ms-flex: 1;
+			  -moz-flex: 1;
+			  flex:1;
+				height: 100%;
+				width: 150px;
+				border-left: 1px solid #dedede;
+				background: #f8f9fb;
+				border-bottom:1px solid #dedede;
+				> a {
+					border-radius: 0;
+					background: transparent;
+					border: none;
+					border-bottom:5px solid;
+					border-color:transparent;
+					height: 100%;
+					width: 100%;
+					text-align: center;
+					padding: 25px 0;
+					font-size: 16px;
+					text-transform: uppercase;
+					color: #999;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					overflow: hidden;
+					&:focus, &:hover {
+						color: #666;
+						// border-color: #dedede;
+						background: #fdfdfd;
+					}
+				}
+				&:first-child {
+					border-left:0;
+				}
+				&.active {
+					background:#fff;
+					border-bottom:0;
+					a {
+						border-color:#4ec5d6;
+						color:#333;
+						&:hover {
+							background:#fff;
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	// Body
+	.module-body {
+		border: $base-border;
+		background:#fff;
+		border-radius: 0 0 3px 3px;
+		padding:$base-spacing;
+		border-top:0;
+		.module-text {}
+		.module-link {}
+		.module-list {}
+		.module-item {}
+		.module-item-link {}
+		> form:first-child {
+			margin-top: -0.75em;
+		}
+	}
+
+
+	// Footer
+	.module-footer {
+		.module-footer-text {
+
+		}
+	}
+}
+
+
+.module.module-table	{
+	.module-content {
+		padding:0;
+		.table-responsive {
+			border:0;
+			.table {
+				tr {
+					th, td {
+						border-right:1px solid #dedede;
+						&:last-child {
+							border-right:0;
+						}
+					}
+				}
+			}
+		}
+	}
+}

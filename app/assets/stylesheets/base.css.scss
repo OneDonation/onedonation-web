@@ -1,0 +1,149 @@
+// Flexbox
+
+@mixin flex($flex) {
+  -webkit-flex: $flex;
+  -ms-flex: $flex;
+  -moz-flex: $flex;
+  flex:$flex;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+@mixin flexbox($flex: 1 100%, $flex-flow: column nowrap) {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  -webkit-flex: $flex;
+  -ms-flex: $flex;
+  -moz-flex: $flex;
+  flex:$flex;
+
+  -ms-flex-flow: $flex-flow;
+  -moz-flex-flow: $flex-flow;
+  -webkit-flex-flow: $flex-flow;
+  flex-flow: $flex-flow;
+}
+
+@mixin rounded() {
+  border-radius:5px;
+  -webkit-border-radius:5px;
+  -moz-boder-radius:5px;
+}
+
+html {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  box-sizing: inherit;
+}
+
+html, body {
+	height:100%;
+	width:100%;
+	overflow:hidden;
+	-webkit-font-smoothing: antialiased;
+	font-color: $gray;
+}
+
+.content {
+	height:100%;
+	min-width:800px;
+	position: relative;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-bottom: 13.25em;
+}
+
+
+
+// Global
+.left {
+	float:left;
+}
+
+.right {
+	float:right;
+}
+
+.clearfix {
+	@include clearfix();
+}
+
+.hidden {
+	display:none !important;
+}
+
+.center {
+	text-align:center;
+	margin:0 auto;
+}
+
+.fa-text {
+	&:before {
+		margin-right:5px;
+	}
+}
+
+::-webkit-input-placeholder {
+	font-weight: 300;
+}
+
+.chosen-container {
+	width: 100% !important;
+	.chosen-default {
+		span {
+			color:$light_gray;
+		}
+	}
+}
+.canvasjs-chart-credit {
+	display:none !important;
+}
+.canvasjs-chart-canvas {
+	background:transparent !important;
+}
+
+.drop-element, .drop-element:after, .drop-element:before, .drop-element *, .drop-element *:after, .drop-element *:before {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.drop-element {
+  position: absolute;
+  display: none;
+  &.drop-open {
+    display: block;
+    z-index: 100;
+  }
+  &.drop-theme-basic {
+	  max-width: 100%;
+	  max-height: 100%;
+	}
+	&.drop-theme-basic .drop-content {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -moz-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-family: inherit;
+    background: #eee;
+    color: #444;
+    padding: 1em;
+    font-size: 1.1em;
+    line-height: 1.5em;
+ 	}
+}
+

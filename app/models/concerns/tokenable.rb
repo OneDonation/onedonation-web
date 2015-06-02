@@ -3,6 +3,8 @@ module Tokenable
 
   included do
     before_validation :generate_token, if: Proc.new { |tokenable| tokenable.uid.blank? }
+
+    validates :uid, presence: true
   end
 
   protected

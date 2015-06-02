@@ -1,0 +1,98 @@
+.header {
+  height: 9em;
+  min-height: 6em;
+
+  background: $black;
+  position: relative;
+  z-index:1;
+  .page-header {
+    font-size: 2em;
+    line-height: 1.25em;
+
+    float: left;
+    overflow: hidden;
+
+    width: 50%;
+    margin-top: .75em;
+    margin-bottom: .25em;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    color: $white;
+  }
+  .page-actions {
+    float: right;
+
+    width: 50%;
+    height: $base-spacing * 2;
+    margin-top: $base-spacing;
+  }
+  .nav {
+    a {
+      margin: 0 1em;
+
+      color: #656D80;
+      &.logo {
+        font-family: $source;
+        font-weight: 700;
+        font-style: italic;
+
+        display: block;
+        float: left;
+
+        width: 1.5em;
+        height: 1.5em;
+
+        transition: color .5s linear;
+        text-align: center;
+
+        color: white;
+        border-radius: 4px;
+        background: $green;
+      }
+      &.divider {
+        margin: 0;
+        color: #656D80;
+        cursor: default;
+        &:hover {
+          color: $light-gray;
+        }
+      }
+      &:hover {
+        color: $white;
+      }
+      &:first-child {
+        margin-left: 0;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+  .logout-nav {
+    position: absolute;
+    top: 1.5em;
+    right: 1.5em;
+  }
+}
+
+.content-header {
+  border-bottom: 1px solid #f1f1f1;
+  z-index: 1;
+  position: relative;
+  .nav {
+    a {
+      border-left: 1px solid #f1f1f1;
+      padding: ($base-spacing / 2.1) 1em ($base-spacing / 2);
+      float: left;
+      max-height: 47px;
+      &:last-child {
+        border-right: 1px solid #f1f1f1;
+      }
+      &.active {
+        box-shadow: 0px -3px 0px $green inset;
+      }
+    }
+  }
+}

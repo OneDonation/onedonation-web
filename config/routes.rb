@@ -1,85 +1,95 @@
 Rails.application.routes.draw do
 
+  get 'users/index'
 
-  resources :teams
+  get 'users/show'
 
-  resources :user_meta
+  get 'users/edit'
 
-  devise_for :users, skip: [:sessions, :registrations]
+  get 'users/update'
 
-  as :user do
-    get '/login' => 'devise/sessions#new', as: :new_user_session
-    post '/login' => 'devise/sessions#create', as: :user_session
-    delete '/logout' => 'devise/sessions#destroy', as: :destroy_user_session
-    get '/get-started' => 'devise/registrations#new', as: :new_user_registration
-    get '/get-started' => 'devise/registrations#create', as: :user_registration
-  end
+  get 'users/destroy'
 
-  devise_for :staffs, skip: [:sessions]
+  ########################
+  # Stripe Routes
+  ########################
+  mount StripeEvent::Engine => "/stripe/webhooks"
+
+  ########################
+  # Admin Routes
+  ########################
+  devise_for :admins, skip: [:sessions]
   constraints subdomain: "admin" do
-    as :staff do
-      get '/sign-in' => 'devise/sessions#new', as: :new_staff_session
-      post '/sign-in' => 'devise/sessions#create', as: :staff_session
-      delete '/sign-out' => 'devise/sessions#destroy', as: :destroy_staff_session
-
-      get "/dashboard" => "admin/staff#dashboard", as: :staff_dashboard
+    as :admin do
+      unauthenticated :admin do
+        root to: 'devise/sessions#new', as: :root_admin_session
+      end
+      authenticated :admin do
+        root to: 'application#index', as: :admin_dashboard
+      end
+      post "/sign-in" => "devise/sessions#create", as: :admin_session
+      get "/sign-in" => "devise/sessions#new", as: :new_admin_session
+      match "/sign-out" => "devise/sessions#destroy", as: :destroy_admin_session, via: [:get, :delete]
+      get "/login" => redirect("sign-in")
     end
   end
 
-  root "application#index"
+  ########################
+  # User Routes
+  ########################
+  devise_for :users,
+  skip: [
+    :sessions,
+    :registrations
+  ],
+  controllers: {
+    registrations: "registrations",
+    omniauth_callbacks: "omniauth_callbacks",
+    confirmations: "confirmations"
+  }
+  as :user do
+    authenticated :user do
+      root to: 'application#index', as: :user_dashboard
+    end
+    unauthenticated :user do
+      root to: 'devise/sessions#new', as: :root
+    end
+    # authenticated :admin do
+    #   redirect_to
+    # end
+    get "/login" => "devise/sessions#new", as: :new_user_session
+    post "/login" => "devise/sessions#create", as: :user_session
+    get "/logout" => "devise/sessions#destroy", as: :destroy_user_session
 
-  # The priority is based upon order of creation: first created -> highest priority.
-  # See how all your routes lay out with "rake routes".
+    get "/get-started/" => "registrations#new", as: :new_user_registration
+    post "/get-started/" => "registrations#create", as: :user_registration
+    get "/setup" => "registrations#setup_stripe_account", as: :setup_stripe_account
+    post "setup" => "registrations#update_stripe_account", as: :update_stripe_account
+    get "/congrats" => "confirmations#congrats", as: :registration_complete
+    patch "/confirm" => "confirmations#confirm"
+    get "account/confirmation" => "confirmations#show", as: :user_confirm
 
-  # You can have the root of your site routed with "root"
-  # root 'welcome#index'
+    get "/settings" => redirect("settings/profile")
+    get "/settings/(:setting)" => "registrations#edit", as: :setting
+    patch "/settings" => "registrations#update"
+  end
 
-  # Example of regular route:
-  #   get 'products/:id' => 'catalog#view'
 
-  # Example of named route that can be invoked with purchase_url(id: product.id)
-  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
+  get "donors/index"
 
-  # Example resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
+  resources :accounts
+  resources :donations
+  resources :donors, only: :index
+  resources :fundraisers, controller: :funds
+  resources :metadata
+  resources :users
 
-  # Example resource route with options:
-  #   resources :products do
-  #     member do
-  #       get 'short'
-  #       post 'toggle'
-  #     end
-  #
-  #     collection do
-  #       get 'sold'
-  #     end
-  #   end
 
-  # Example resource route with sub-resources:
-  #   resources :products do
-  #     resources :comments, :sales
-  #     resource :seller
-  #   end
 
-  # Example resource route with more complex sub-resources:
-  #   resources :products do
-  #     resources :comments
-  #     resources :sales do
-  #       get 'recent', on: :collection
-  #     end
-  #   end
+  resources :accounts do
+    resources :donors, only: :index
+    resources :donations
+    resources :fundraisers, controller: :funds
+  end
 
-  # Example resource route with concerns:
-  #   concern :toggleable do
-  #     post 'toggle'
-  #   end
-  #   resources :posts, concerns: :toggleable
-  #   resources :photos, concerns: :toggleable
-
-  # Example resource route within a namespace:
-  #   namespace :admin do
-  #     # Directs /admin/products/* to Admin::ProductsController
-  #     # (app/controllers/admin/products_controller.rb)
-  #     resources :products
-  #   end
 end

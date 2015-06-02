@@ -1,0 +1,22 @@
+<!--
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div id="donations_panel" class="panel panel-default" style="height:300px;background:#4ec5d6;padding:15px 5px 0;">
+      <div id="donations" style="height:100%;width:100%"></div>
+    </div>
+  </div>
+</div> -->
+<div class="table-responsive">
+  <%= form_tag "/donations", method: :get, remote: true do |f| %>
+  <%= hidden_field_tag :filter, true %>
+  <%= hidden_field_tag :sort, params[:sort] %>
+  <%= hidden_field_tag :direction, params[:direction] %>
+  <ul id="donations">
+    <%= render "list_items", donations: @donations %>
+  </ul>
+  <%= submit_tag nil, style: "display:none" %>
+  <% end %>
+</div>
+<div class="pull-right">
+  <%= paginate @donations %>
+</div>

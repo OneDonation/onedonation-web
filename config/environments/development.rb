@@ -36,5 +36,10 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   config.action_mailer.default_url_options = { host: 'lvh.me', port: 3000 }
+  config.action_mailer.delivery_method = :letter_opener
+
+  ENV["STRIPE_CONNECT_CLIENT_ID"] = Rails.application.secrets.stripe_connect_client_id
+  ENV["STRIPE_PUBLIC_KEY"] = Rails.application.secrets.stripe_public_key
+  ENV["STRIPE_SECRET_KEY"] = Rails.application.secrets.stripe_secret_key
 
 end

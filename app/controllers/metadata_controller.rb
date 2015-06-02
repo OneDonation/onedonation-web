@@ -1,74 +1,76 @@
-class UserMetaController < ApplicationController
+class MetadataController < ApplicationController
   before_action :set_user_metum, only: [:show, :edit, :update, :destroy]
 
-  # GET /user_meta
-  # GET /user_meta.json
+  # GET /metadata
   def index
-    @user_meta = UserMetum.all
+    @metadata = Metadata.all
   end
 
-  # GET /user_meta/1
-  # GET /user_meta/1.json
+  # GET /metadata/:id
   def show
   end
 
-  # GET /user_meta/new
+  # GET /metadata/new
   def new
-    @user_metum = UserMetum.new
+    @metadata = Metadata.new
   end
 
-  # GET /user_meta/1/edit
+  # GET /metadata/:id/edit
   def edit
   end
 
-  # POST /user_meta
-  # POST /user_meta.json
+  # POST /metadata
   def create
-    @user_metum = UserMetum.new(user_metum_params)
+    @metadata = Metadata.new(user_metum_params)
 
-    respond_to do |format|
-      if @user_metum.save
-        format.html { redirect_to @user_metum, notice: 'User metum was successfully created.' }
-        format.json { render :show, status: :created, location: @user_metum }
-      else
-        format.html { render :new }
-        format.json { render json: @user_metum.errors, status: :unprocessable_entity }
-      end
+    if @metadata.save
+      redirect_to @metadata, notice: 'User metum was successfully created.'
+    else
+      render :new
     end
   end
 
-  # PATCH/PUT /user_meta/1
-  # PATCH/PUT /user_meta/1.json
+  # PATCH/PUT /metadata/:id
   def update
-    respond_to do |format|
-      if @user_metum.update(user_metum_params)
-        format.html { redirect_to @user_metum, notice: 'User metum was successfully updated.' }
-        format.json { render :show, status: :ok, location: @user_metum }
-      else
-        format.html { render :edit }
-        format.json { render json: @user_metum.errors, status: :unprocessable_entity }
-      end
+    if @Mmtadata.update(user_metum_params)
+      redirect_to @metadata, notice: 'User metum was successfully updated.'
+    else
+      render :edit
     end
   end
 
-  # DELETE /user_meta/1
-  # DELETE /user_meta/1.json
+  # DELETE /metadata/:id
   def destroy
-    @user_metum.destroy
-    respond_to do |format|
-      format.html { redirect_to user_meta_url, notice: 'User metum was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    @metadata.destroy
+    redirect_to metadata_url, notice: 'User metum was successfully destroyed.'
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user_metum
-      @user_metum = UserMetum.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def user_metum_params
-      params[:user_metum]
-    end
+  def set_user_metum
+    @metadata = Metadata.find_by(params[:uid])
+  end
+
+  def user_metum_params
+    params.require(:metadata).permit(
+      :uid,
+      :account_id,
+      :user_id,
+      :name,
+      :meta_type,
+      :meta_sub_type,
+      :custom,
+      :date,
+      :street,
+      :apt_suite,
+      :city,
+      :state,
+      :postal_code,
+      :country,
+      :email_address,
+      :number,
+      :username,
+      :value
+    )
+  end
 end

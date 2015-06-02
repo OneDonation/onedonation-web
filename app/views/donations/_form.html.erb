@@ -1,0 +1,85 @@
+<%= form_for(@donation) do |f| %>
+  <% if @donation.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@donation.errors.count, "error") %> prohibited this donation from being saved:</h2>
+
+      <ul>
+      <% @donation.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :stripe_id %><br>
+    <%= f.text_field :stripe_id %>
+  </div>
+  <div class="field">
+    <%= f.label :stripe_customer_id %><br>
+    <%= f.text_field :stripe_customer_id %>
+  </div>
+  <div class="field">
+    <%= f.label :stripe_invoice_id %><br>
+    <%= f.text_field :stripe_invoice_id %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :caputed %><br>
+    <%= f.check_box :caputed %>
+  </div>
+  <div class="field">
+    <%= f.label :paid %><br>
+    <%= f.check_box :paid %>
+  </div>
+  <div class="field">
+    <%= f.label :refunded %><br>
+    <%= f.check_box :refunded %>
+  </div>
+  <div class="field">
+    <%= f.label :amount %><br>
+    <%= f.number_field :amount %>
+  </div>
+  <div class="field">
+    <%= f.label :currency %><br>
+    <%= f.text_field :currency %>
+  </div>
+  <div class="field">
+    <%= f.label :stripe_card_id %><br>
+    <%= f.text_field :stripe_card_id %>
+  </div>
+  <div class="field">
+    <%= f.label :card_last_four %><br>
+    <%= f.text_field :card_last_four %>
+  </div>
+  <div class="field">
+    <%= f.label :card_brand %><br>
+    <%= f.text_field :card_brand %>
+  </div>
+  <div class="field">
+    <%= f.label :card_exp_month %><br>
+    <%= f.text_field :card_exp_month %>
+  </div>
+  <div class="field">
+    <%= f.label :card_exp_year %><br>
+    <%= f.text_field :card_exp_year %>
+  </div>
+  <div class="field">
+    <%= f.label :stripe_failure_message %><br>
+    <%= f.text_field :stripe_failure_message %>
+  </div>
+  <div class="field">
+    <%= f.label :stripe_failure_code %><br>
+    <%= f.text_field :stripe_failure_code %>
+  </div>
+  <div class="field">
+    <%= f.label :statement_description %><br>
+    <%= f.text_field :statement_description %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

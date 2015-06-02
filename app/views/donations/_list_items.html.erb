@@ -1,0 +1,16 @@
+<% if donations.any? %>
+<% donations.each do |donation| %>
+  <li class="donation">
+    <%= check_box_tag "select" %>
+    <%= link_to donation.donor.name("human"), donation_path(donation.stripe_id) %>
+    <td class="center"><%= donation.donor.email %></td>
+    <td class="center"><%= donation.fund.name %></td>
+    <td class="center"><%= donation.created_at.strftime("%b %d, %Y") %></td>
+  </li>
+<% end %>
+
+<% else %>
+	<li>
+		<p>No matching records.</p>
+	</li>
+<% end %>

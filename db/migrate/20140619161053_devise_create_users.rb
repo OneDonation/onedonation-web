@@ -10,6 +10,10 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.integer :age
       t.integer :gender
       t.string  :username
+      t.string :stripe_customer_id
+      t.string :stripe_subscription_id
+      t.string :stripe_default_source
+
 
       ## Database authenticatable
       t.string :email,              null: false, default: ""
@@ -45,9 +49,9 @@ class DeviseCreateUsers < ActiveRecord::Migration
 
     add_index :users, :gender
     add_index :users, :age
-    add_index :users, :uid,                unique: true
+    add_index :users, :uid,                  unique: true
     add_index :users, :email,                unique: true
-    add_index :users, :username,                unique: true
+    add_index :users, :username,             unique: true
     add_index :users, :reset_password_token, unique: true
     add_index :users, :confirmation_token,   unique: true
     add_index :users, :unlock_token,         unique: true
