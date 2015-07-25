@@ -3,17 +3,17 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 
-#donation_filters {
-	margin-bottom: 20px;
-}
 
 #donations {
-	padding:0;
+	margin: 1.5em 0;
+  background-color: #fff;
+  padding: 0;
+  list-style: none;
 }
 .donation {
 	list-style: none;
 	border-bottom: 1px solid #dedede;
-	padding: 15px 30px;
+	padding: 1.5em;
 	* {
 		display: inline-block;
 	}
