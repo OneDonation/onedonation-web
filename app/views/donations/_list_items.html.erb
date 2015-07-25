@@ -2,10 +2,10 @@
 <% donations.each do |donation| %>
   <li class="donation">
     <%= check_box_tag "select" %>
-    <%= link_to donation.donor.name("human"), donation_path(donation.stripe_id) %>
-    <td class="center"><%= donation.donor.email %></td>
-    <td class="center"><%= donation.fund.name %></td>
-    <td class="center"><%= donation.created_at.strftime("%b %d, %Y") %></td>
+    <span><%= link_to donation.donor.name("human"), donation_path(donation.stripe_id) %></span>
+    <span><%= donation.donor.email %></span>
+    <span><%= donation.fund.name %></span>
+    <span><%= donation.created_at.strftime("%b %d, %Y") %></span>
   </li>
 <% end %>
 
