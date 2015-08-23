@@ -14,7 +14,6 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.string :stripe_subscription_id
       t.string :stripe_default_source
 
-
       ## Database authenticatable
       t.string :email,              null: false, default: ""
       t.string :encrypted_password, null: false, default: ""

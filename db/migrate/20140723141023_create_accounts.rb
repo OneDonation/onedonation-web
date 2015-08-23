@@ -8,17 +8,16 @@ class CreateAccounts < ActiveRecord::Migration
       t.string :encrypted_stripe_secret_key
       t.string :encrypted_stripe_publishable_key
       t.integer :stripe_verification_status
-      t.string :stripe_subscription_id
-      t.string :stripe_subscription_status
-      t.string :stripe_plan_id
-      t.string :stripe_plan_name
+      t.string :first_name
+      t.string :last_name
       t.string :email
-      t.string :country
       t.string :business_name
       t.string :business_url
-      t.string :support_phone
+      t.jsonb  :legal_entity,  null: false, default: '{}'
+      t.string :country
       t.string :statement_descriptor
-      t.integer :account_type, default: 0
+      t.string :timezone
+      t.integer :entity_type, default: 0
       t.boolean :current, default: false
 
       t.timestamps
@@ -29,9 +28,11 @@ class CreateAccounts < ActiveRecord::Migration
     add_index :accounts, :slug, unique: true
     add_index :accounts, :email
     add_index :accounts, :country
-    add_index :accounts, :stripe_plan_id
+    # add_index :accounts, :stripe_plan_id
     add_index :accounts, :stripe_account_id
-    add_index :accounts, :stripe_subscription_id
+    # add_index :accounts, :stripe_subscription_id
     add_index :accounts, :stripe_verification_status
+    # add_index :accounts, :legal_entity, using: :gin
+
   end
 end

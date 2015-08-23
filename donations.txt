@@ -1,5 +1,17 @@
- donations.io
+- donations.io
 
+
+Raising $2500
+Period 3 months
+Paid out: $75
+
+Raising $2500
+period 3 months
+paid out: $55
+
+Raising $2500
+period 3 months
+paid out: $30
 
 Plans
 -----------------------
@@ -8,19 +20,19 @@ Plans
     3% of Donations
       - Unlimited Trips/Causes/Events
       - Single trip participant
-    1% + $10/mo
-      - Unlimited Trips/Causes/Events
-    0% + $15/mo
+    0% + $10/mo
       - Unlimited Trips/Causes/Events
 
   ORGANIZATION
   -----------------------
     3% of donations
       - Unlimited Trips, Causes, or Fund raising events
+      - One team
       - Unlimited Team Members
       - Non-profit Tax deduction receipts
     1% + $99/mo
       - Unlimited Trips, Causes, or Fund raising events
+      - One Team
       - Unlimited Team Members
       - Unlimited Contacts/Donors
       - Non-profit Tax deduction receipts

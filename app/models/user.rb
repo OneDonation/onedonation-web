@@ -52,7 +52,7 @@ class User < ActiveRecord::Base
   has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id"
   has_one :current_account, -> { where(current: true) }, class_name: "Account", foreign_key: :owner_id
 
-  accepts_nested_attributes_for :accounts#, allow_blank: false
+  accepts_nested_attributes_for :accounts
 
   def donors(order_by = nil)
     donations.includes(:donors).donors.order(order_by).uniq

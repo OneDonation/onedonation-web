@@ -61,10 +61,10 @@ Rails.application.routes.draw do
     post "/login" => "devise/sessions#create", as: :user_session
     get "/logout" => "devise/sessions#destroy", as: :destroy_user_session
 
-    get "/get-started/" => "registrations#new", as: :new_user_registration
-    post "/get-started/" => "registrations#create", as: :user_registration
-    get "/setup" => "registrations#setup_stripe_account", as: :setup_stripe_account
-    post "setup" => "registrations#update_stripe_account", as: :update_stripe_account
+    get "/sign-up/" => "registrations#new", as: :new_user_registration
+    post "/sign-up/" => "registrations#create", as: :user_registration
+    get "/setup" => "registrations#onboarding", as: :onboarding
+    post "setup" => "registrations#onboarding", as: :save_onboarding
     get "/congrats" => "confirmations#congrats", as: :registration_complete
     patch "/confirm" => "confirmations#confirm"
     get "account/confirmation" => "confirmations#show", as: :user_confirm
@@ -72,7 +72,10 @@ Rails.application.routes.draw do
     get "/settings" => redirect("settings/profile")
     get "/settings/(:setting)" => "registrations#edit", as: :setting
     patch "/settings" => "registrations#update"
+
   end
+
+
 
 
   get "donors/index"

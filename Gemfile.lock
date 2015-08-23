@@ -68,11 +68,6 @@ GEM
     builder (3.2.2)
     byebug (5.0.0)
       columnize (= 0.9.0)
-    carmen (1.0.2)
-      activesupport (>= 3.0.0)
-    carmen-rails (1.0.1)
-      carmen (~> 1.0.0)
-      rails
     chronic (0.10.2)
     coderay (1.1.0)
     coercible (1.0.0)
@@ -309,8 +304,6 @@ DEPENDENCIES
   bourbon
   breadcrumbs_on_rails
   byebug
-  carmen
-  carmen-rails
   chronic
   coffee-rails
   coffeebeans

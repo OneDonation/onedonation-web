@@ -35,8 +35,8 @@ gem 'omniauth-stripe-connect'
 # DB
 gem 'pg'
 gem 'faker'
-gem 'carmen'
-gem 'carmen-rails'
+# gem 'carmen'
+# gem 'carmen-rails'
 gem 'chronic'
 gem 'attr_encrypted'
 

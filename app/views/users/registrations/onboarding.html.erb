@@ -1,0 +1,175 @@
+<h2>Welcome</h2>
+<p>Thank you for joining Donations.io! We have just a few questions we need you to answer so we can finish setting up your account.</p>
+<%= button_to "Get Started", "#", class: "btn btn-primary" %>
+
+<%= form_for(current_user, as: current_user, url: save_onboarding_path(current_user)) do |f| %>
+
+  <%= f.fields_for :account do |account_builder| %>
+    <fieldset>
+      <legend>Account Type</legend>
+      <div class="form-group">
+        <div class="radio">
+          <%= account_builder.label :account_type, for: "user_account_account_type_donor" do %>
+            <%= account_builder.radio_button :account_type, :donor %> Donor
+          <% end %>
+        </div>
+        <div class="radio">
+          <%= account_builder.label :account_type, for: "user_account_account_type_personal" do %>
+            <%= account_builder.radio_button :account_type, :personal, checked: "checked" %> Individual
+          <% end %>
+        </div>
+        <div class="radio">
+          <%= account_builder.label :account_type, for: "user_account_account_type_business" do %>
+            <%= account_builder.radio_button :account_type, :business %> Business
+          <% end %>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="personal-items">
+      <legend>Personal Details</legend>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-6 col-md-6">
+            <%= account_builder.label :first_name, "First Name" %>
+            <%= account_builder.text_field :first_name, class: "form-control", autofocus: true %>
+          </div>
+          <div class="col-sm-6 col-md-6">
+            <%= account_builder.label :first_name, "Last Name" %>
+            <%= account_builder.text_field :last_name, class: "form-control" %>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-6 col-md-6">
+            <%= label_tag "legal_entity['dob']['month']", "Birthday" %>
+            <div class="row">
+              <div class="col-md-4">
+                <%= text_field_tag "legal_entity['dob']['month']", nil, class: "form-control", placeholder: "month" %>
+              </div>
+              <div class="col-md-4">
+                <%= text_field_tag "legal_entity['dob']['day']", nil, class: "form-control", placeholder: "day" %>
+              </div>
+              <div class="col-md-4">
+                <%= text_field_tag "legal_entity['dob']['year']", nil, class: "form-control", placeholder: "year" %>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-6">
+            <%= label_tag "legal_entity['ssn_last_4'], nil", "Last Four of SSN" %>
+            <%= text_field_tag "legal_entity['ssn_last_4']", nil, class: "form-control" %>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-6 col-md-6">
+            <%= label_tag "legal_entity['personal_address']['line1']", "Address" %>
+            <%= text_field_tag "legal_entity['personal_address']['line1']", nil, class: "form-control" %>
+          </div>
+          <div class="col-sm-6 col-md-6">
+            <%= label_tag "legal_entity['personal_address']['line2']", "Apt/Ste" %>
+            <%= text_field_tag "legal_entity['personal_address']['line2']", nil, class: "form-control" %>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-5 col-md-5">
+            <%= label_tag "legal_entity['personal_address']['city']", "City" %>
+            <%= text_field_tag "legal_entity['personal_address']['city']", nil, class: "form-control" %>
+          </div>
+          <div class="col-sm-4 col-md-4">
+            <%= label_tag "legal_entity['personal_address']['state']", "State" %>
+            <%= text_field_tag "legal_entity['personal_address']['state']", nil, class: "form-control" %>
+          </div>
+          <div class="col-sm-3 col-md-3">
+            <%= label_tag "legal_entity['personal_address']['postal_code']", "Postal Code" %>
+            <%= text_field_tag "legal_entity['personal_address']['postal_code']", nil, class: "form-control" %>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= account_builder.label :country %>
+        <%= account_builder.country_select(:country,
+            {
+              selected: "US",
+              priority_countries: ["US"],
+              only: [
+                "AT",
+                "AU",
+                "BE",
+                "CA",
+                "CH",
+                "DE",
+                "DK",
+                "ES",
+                "FI",
+                "FR",
+                "GB",
+                "IE",
+                "IT",
+                "JP",
+                "LU",
+                "MX",
+                "NL",
+                "NO",
+                "SE",
+                "US"
+              ]
+            },
+            { class: "form-control" }
+          ) %>
+      </div>
+    </fieldset>
+
+    <fieldset class="personal-items">
+      <legend>Business Details</legend>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-6 col-md-6">
+            <%= account_builder.label :business_name, "Business Name" %>
+            <%= account_builder.text_field :business_name, class: "form-control" %>
+          </div>
+          <div class="col-sm-6 col-md-6">
+            <%= account_builder.label :business_url, "Business URL" %>
+            <%= account_builder.text_field :business_url, class: "form-control" %>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-6 col-md-6">
+            <%= label_tag "legal_entity['business_address']['line1']", "Address" %>
+            <%= text_field_tag "legal_entity['business_address']['line1']", nil, class: "form-control", autofocus: true %>
+          </div>
+          <div class="col-sm-6 col-md-6">
+            <%= label_tag "legal_entity['business_address']['line2']", "Apt/Ste" %>
+            <%= text_field_tag "legal_entity['business_address']['line2']", nil, class: "form-control", autofocus: true %>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-5 col-md-5">
+            <%= label_tag "legal_entity['business_address']['city']", "City" %>
+            <%= text_field_tag "legal_entity['business_address']['city']", nil, class: "form-control", autofocus: true %>
+          </div>
+          <div class="col-sm-4 col-md-4">
+            <%= label_tag "legal_entity['business_address']['state']", "State" %>
+            <%= text_field_tag "legal_entity['business_address']['state']", nil, class: "form-control", autofocus: true %>
+          </div>
+          <div class="col-sm-3 col-md-3">
+            <%= label_tag "legal_entity['business_address']['postal_code']", "Postal Code" %>
+            <%= text_field_tag "legal_entity['business_address']['postal_code']", nil, class: "form-control", autofocus: true %>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>
+

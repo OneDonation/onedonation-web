@@ -28,9 +28,10 @@ class Account < ActiveRecord::Base
 
   # Enums
   #########################
-  enum account_type: [
+  enum entity_type: [
+    :donor,
     :personal,
-    :organization
+    :business
   ]
   enum stripe_verification_status: [
     :unverified,

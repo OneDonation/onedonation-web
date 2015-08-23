@@ -13,6 +13,7 @@ fieldset {
   background-color: $white;
   padding: 1.5em 1.5em 0;
   border: 1px solid #dedede;
+  border-radius: $border-radius-base;
   // Chrome and Firefox set a `min-width: min-content;` on fieldsets,
   // so we reset that to ensure it behaves more like a standard block element.
   // See https://github.com/twbs/bootstrap/issues/12359.
@@ -215,6 +216,9 @@ input[type="search"] {
 .form-group {
   min-height: 72px;
   margin-bottom: $base-padding;
+  &.submit {
+    margin-bottom:0;
+  }
 }
 
 
@@ -250,8 +254,7 @@ input[type="search"] {
 .checkbox input[type="checkbox"],
 .checkbox-inline input[type="checkbox"] {
   position: absolute;
-  margin-left: -20px;
-  margin-top: 4px \9;
+  margin-left: -1.6em;
 }
 
 .radio + .radio,
@@ -269,6 +272,11 @@ input[type="search"] {
   vertical-align: middle;
   font-weight: normal;
   cursor: pointer;
+  border: 1px solid $gray-lighter;
+  border-radius: 4px;
+  padding: 0.375em 1.5em 0.375em 2.5em;
+  width: auto;
+  line-height: 1.5;
 }
 .radio-inline + .radio-inline,
 .checkbox-inline + .checkbox-inline {

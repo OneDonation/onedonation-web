@@ -10,9 +10,9 @@
   <%= hidden_field_tag :filter, true %>
   <%= hidden_field_tag :sort, params[:sort] %>
   <%= hidden_field_tag :direction, params[:direction] %>
-  <ul id="donations">
+  <div id="donations" class="well">
     <%= render "list_items", donations: @donations %>
-  </ul>
+  </div>
   <%= submit_tag nil, class: "hide" %>
 <% end %>
 <div class="pull-right">

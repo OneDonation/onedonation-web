@@ -36,6 +36,13 @@ class RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  def onboarding
+  end
+
+  def finalize_account
+    create_stripe_account(resource, request)
+  end
+
   # GET /resource/edit
   def edit
     render :edit
@@ -112,7 +119,7 @@ class RegistrationsController < Devise::RegistrationsController
   # The path used after sign up. You need to overwrite this method
   # in your own RegistrationsController.
   def after_sign_up_path_for(resource)
-    after_sign_in_path_for(resource)
+    onboarding_path(resource)
   end
 
   # The path used after sign up for inactive accounts. You need to overwrite
@@ -163,17 +170,19 @@ class RegistrationsController < Devise::RegistrationsController
                                         )
       resource.update(stripe_customer_id: stripe_customer.id)
     rescue Stripe::APIError => e
+      Rails.logger.debug e.inspect
       # TODO: Handle Stripe Errors at signup.
     end
   end
 
-  def create_stripe_account(resource, request)
+  def create_stripe_account(resource, params, request)
     account = resource.accounts.first
     begin
       stripe_account = Stripe::Account.create(
                                         managed: true,
                                         country: resource.accounts.first.country,
                                         email: resource.email,
+                                        legal_entity: params[:legal_entity],
                                         tos_acceptance: {
                                           date: Time.now.to_i,
                                           ip: request.remote_ip
@@ -186,6 +195,7 @@ class RegistrationsController < Devise::RegistrationsController
         stripe_verification_status: stripe_account.legal_entity.verification.status
       )
     rescue Stripe::APIError => e
+      Rails.logger.debug e.inspect
       # TODO: Handle Stripe Errors at signup.
     end
   end

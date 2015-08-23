@@ -2,7 +2,7 @@
 <html>
 	<head>
 	  <title>Donations.io</title>
-	  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+	  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
 	  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
 	  <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
 	  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
@@ -15,16 +15,16 @@
 		<header class="header">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-8">
+					<div class="col-sm-8 col-md-8">
 						<nav class="nav">
-							<%= link_to "D", "#", class: "logo" %>
+							<%= link_to "D", "/", class: "logo" %>
 							<%= link_to "Donations", donations_path, class: active_classes(donations_path) %>
 							<%= link_to "Fundraisers", fundraisers_path, class: active_classes(fundraisers_path) %>
 							<%= link_to "Contacts", "#", class: "" %>
 							<%= link_to "Activity", "#", class: "" %>
 						</nav>
 					</div>
-					<div class="col-md-4">
+					<div class="col-sm-4 col-md-4">
 						<nav class="nav navbar-right">
 							<%= link_to "#", class: "account-switcher" do %>
 								<%= current_user.name("human") %> <%= icon("chevron-down") %>

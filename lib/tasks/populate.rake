@@ -1,6 +1,3 @@
-require 'carmen'
-include Carmen
-
 namespace :db do
   namespace :populate do
 
@@ -87,9 +84,9 @@ namespace :db do
             street:                Faker::Address.street_address,
             apt_suite:             Faker::Address.secondary_address,
             city:                  Faker::Address.city,
-            state:                 Country.named('United States').subregions.sample.name,
+            state:                 Faker::Address.state,
             postal_code:           Faker::Address.zip,
-            country:               Country.named('United States').alpha_3_code,
+            country:               Faker::Address.country_code,
             goal:                  10000000
           )
         end
