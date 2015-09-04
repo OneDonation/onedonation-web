@@ -13,6 +13,7 @@ gem 'jquery-turbolinks'
 gem 'jbuilder'
 
 # UI/Structure
+gem 'animate-rails'
 gem 'bootstrap-sass'
 gem 'bitters'
 gem 'bourbon'

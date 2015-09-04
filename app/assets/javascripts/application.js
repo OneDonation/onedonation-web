@@ -22,6 +22,13 @@
 
 
 $(document).ready(function(){
+	// Animate css fun
+	// $('.content-header .nav a').click(function(){
+	// 	$('.content-body').addClass('animated slideOutLeft')
+	// })
+	// $('.content-body').addClass('animated slideInRight')
+
+
 	// var accountSwicher;
 
 	// accountSwicher = new Drop({
@@ -35,7 +42,7 @@ $(document).ready(function(){
 	$('tbody.rowlink').rowlink();
 	$('.chosen-select').chosen({allow_single_deselect: true});
 	$('.rangepicker').daterangepicker({opens: 'left', applyClass: 'btn-info'});
-	$('.tooltip-it').tooltip({placement: 'top', trigger: 'hover'})
+	// $('.tooltip-it').tooltip({placement: 'top', trigger: 'hover'})
 	$('[data-numeric]').payment('restrictNumeric');
 
 	// SEARCH
