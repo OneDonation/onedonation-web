@@ -1,31 +1,29 @@
 - donations.io
 
 
-Raising $2500
-Period 3 months
-Paid out: $75
+- group (klan) created by a user
+  - spotify?
 
-Raising $2500
-period 3 months
-paid out: $55
 
-Raising $2500
-period 3 months
-paid out: $30
+
+- org
+ - contacts
+ - direct connection
+
+-------------------------------------------------------------------------------------------------------------------
 
 Plans
 -----------------------
   INDIVIDUALS
   -----------------------
-    3% of Donations
+      % per donation
       - Unlimited Trips/Causes/Events
       - Single trip participant
-    0% + $10/mo
-      - Unlimited Trips/Causes/Events
+
 
   ORGANIZATION
   -----------------------
-    3% of donations
+    3% of donations, + stripe fees
       - Unlimited Trips, Causes, or Fund raising events
       - One team
       - Unlimited Team Members
@@ -67,7 +65,7 @@ Signup flow
   Team
     - Signs Up
     - Give team a name
-    - Setup first team campaign
+    - Setup first team fund
     - Invite users to team
 
 
