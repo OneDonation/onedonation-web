@@ -1,15 +1,4 @@
 Rails.application.routes.draw do
-
-  get 'users/index'
-
-  get 'users/show'
-
-  get 'users/edit'
-
-  get 'users/update'
-
-  get 'users/destroy'
-
   ########################
   # Stripe Routes
   ########################
@@ -76,18 +65,12 @@ Rails.application.routes.draw do
   end
 
 
-
-
-  get "donors/index"
-
   resources :accounts
   resources :donations
   resources :donors, only: :index
   resources :fundraisers, controller: :funds
   resources :metadata
   resources :users
-
-
 
   resources :accounts do
     resources :donors, only: :index

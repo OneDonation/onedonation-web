@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
         end
       end
     else
-	     subdomain == "admin" ? "staff" : "application"
+      subdomain == "admin" ? "staff" : "application"
     end
   end
 
@@ -57,14 +57,6 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # def after_sign_in_path_for(resource)
-  #   if resource.setup_complete
-  #      root_path
-  #   else
-  #     redirect_to account_setup_url
-  #   end
-  # end
-
   def current_account
     @current_account ||= current_user.current_account
   end
@@ -72,20 +64,6 @@ class ApplicationController < ActionController::Base
   def subdomain
   	request.subdomain
   end
-
-
-  # def store_location
-  #   # store last url - this is needed for post-login redirect to whatever the user last visited.
-  #   return unless request.get?
-  #   if (request.path != "/users/sign_in" &&
-  #       request.path != "/users/sign_up" &&
-  #       request.path != "/users/password/new" &&
-  #       request.path != "/users/confirmation" &&
-  #       request.path != "/users/sign_out" &&
-  #       !request.xhr?) # don't store ajax calls
-  #     session[:previous_url] = request.fullpath
-  #   end
-  # end
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(
