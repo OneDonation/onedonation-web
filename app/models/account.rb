@@ -4,7 +4,7 @@ class Account < ActiveRecord::Base
   attr_encrypted :stripe_publishable_key, key: Rails.application.secrets.encryption_key
 
   #                                Attributes
-  # -----------------------------------------------------------------------------
+  # -----------------------------------------------------------------------------------
   # |              Name             |       Type        |         Description         |
   # | ----------------------------- | ----------------- | --------------------------- |
   # | :uid                          |     :string       |                             |
@@ -24,20 +24,20 @@ class Account < ActiveRecord::Base
   # | :statement_descriptor         |     :string       |                             |
   # | :account_type                 |     :integer      |                             |
   # | :current                      |     :boolean      |                             |
-  # -----------------------------------------------------------------------------
+  # -----------------------------------------------------------------------------------
 
   # Enums
   #########################
-  enum entity_type: [
-    :donor,
-    :personal,
-    :business
-  ]
-  enum stripe_verification_status: [
-    :unverified,
-    :pending,
-    :verified
-  ]
+  enum entity_type: {
+    donor: 0,
+    personal: 1,
+    business: 2
+  }
+  enum stripe_verification_status: {
+    unverified: 0,
+    pending: 1,
+    verified: 2
+  }
 
   # Relationships
   #########################
@@ -46,11 +46,11 @@ class Account < ActiveRecord::Base
   has_many :users, through: :memberships
   has_many :funds, dependent: :destroy
   has_many :metadata, class_name: "Metadata"
-  has_many :addresses, ->       { where meta_type: 0 }
-  has_many :emails, ->          { where meta_type: 1 }
-  has_many :phones, ->          { where meta_type: 2 }
-  has_many :websites, ->        { where meta_type: 3 }
-  has_many :social_accounts, -> { where meta_type: 4 }
+  has_many :addresses,        -> { where meta_type: 0 }
+  has_many :emails,           -> { where meta_type: 1 }
+  has_many :phones,           -> { where meta_type: 2 }
+  has_many :websites,         -> { where meta_type: 3 }
+  has_many :social_accounts,  -> { where meta_type: 4 }
 
   # Scopes
   #########################
@@ -69,10 +69,9 @@ class Account < ActiveRecord::Base
     case account_type
     when "personal"
       owner.name("human")
-    when "oganization"
+    when "organization"
       business_name
     end
-
   end
 
   def has_stripe_id?

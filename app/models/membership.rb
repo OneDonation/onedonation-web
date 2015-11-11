@@ -10,10 +10,10 @@ class Membership < ActiveRecord::Base
 
   # Enums
   #########################
-  enum permission: [
-    :admin,
-    :member
-  ]
+  enum permission: {
+    admin: 0,
+    member: 1
+  }
 
   # Relationships
   #########################

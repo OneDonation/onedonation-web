@@ -1,8 +1,15 @@
 class User < ActiveRecord::Base
   include Tokenable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable,
-         :confirmable, :lockable, :omniauthable, omniauth_providers: [:stripe_connect]
+  devise :database_authenticatable,
+         :registerable,
+         :recoverable,
+         :rememberable,
+         :trackable,
+         :validatable,
+         :confirmable,
+         :lockable,
+         :omniauthable,
+         omniauth_providers: [ :stripe_connect ]
 
   #                                Attributes
   # -----------------------------------------------------------------------------
@@ -36,19 +43,16 @@ class User < ActiveRecord::Base
 
   # Relationships
   #########################
-  has_many :addresses, ->       { where meta_type: 0 }
-  has_many :emails, ->          { where meta_type: 1 }
-  has_many :phones, ->          { where meta_type: 2 }
-  has_many :websites, ->        { where meta_type: 3 }
-  has_many :social_accounts, -> { where meta_type: 4 }
-  has_many :dates, ->           { where meta_type: 5 }
+  has_many :addresses,        -> { where meta_type: 0 }
+  has_many :emails,           -> { where meta_type: 1 }
+  has_many :phones,           -> { where meta_type: 2 }
+  has_many :websites,         -> { where meta_type: 3 }
+  has_many :social_accounts,  -> { where meta_type: 4 }
+  has_many :dates,            -> { where meta_type: 5 }
   has_many :metadata, class_name: "Metadata", dependent: :destroy
-
   has_many :accounts, foreign_key: :owner_id, dependent: :destroy
-
   has_many :donations, dependent: :destroy
   has_many :funds, through: :accounts
-
   has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id"
   has_one :current_account, -> { where(current: true) }, class_name: "Account", foreign_key: :owner_id
 
@@ -80,14 +84,14 @@ class User < ActiveRecord::Base
   #########################
 
   def name(size)
-  	case size
-  	when "formal"
-  		"#{prefix} #{first_name} #{middle_name} #{last_name} #{suffix}"
-  	when "semi-formal"
-  		"#{first_name} #{middle_name.present? ? middle_name[0].capitalize+"." : nil} #{last_name}"
-  	when "human"
-  		"#{first_name} #{last_name}"
-  	end
+    case size
+    when "formal"
+      "#{prefix} #{first_name} #{middle_name} #{last_name} #{suffix}"
+    when "semi-formal"
+      "#{first_name} #{middle_name.present? ? middle_name[0].capitalize+"." : nil} #{last_name}"
+    when "human"
+      "#{first_name} #{last_name}"
+    end
   end
 
   def has_multiple_accounts?

@@ -1,35 +1,35 @@
 <% case controller_name %>
 <% when "donors" %>
-	<% title = "Donors" %>
+  <% title = "Donors" %>
 <% when "donations" %>
-	<% title = "Donations" %>
+  <% title = "Donations" %>
 <% when "funds" %>
-	<% title = "Fundraisers" %>
+  <% title = "Fundraisers" %>
 <% when "accounts" %>
   <% case action_name %>
   <% when "setup" %>
-  	<% title = "Account Setup" %>
+    <% title = "Account Setup" %>
   <% else %>
     <% title = "Settings" %>
   <% end %>
 <% when "users" %>
-	<% title = "Users" %>
+  <% title = "Users" %>
 <% else %>
   <% title = "Test" %>
 <% end %>
 
 
 <div id="content_header">
-	<h1><% title %></h1>
+  <h1><% title %></h1>
 
-	<div class="header-actions">
-		<% case controller_name %>
-		<% when "accounts" %>
-			<% case action_name %>
-			<% when "show" %>
+  <div class="header-actions">
+    <% case controller_name %>
+    <% when "accounts" %>
+      <% case action_name %>
+      <% when "show" %>
         <%= link_to "New Account", new_account_path, class: "btn btn-default pull-right" %>
-				<% if true #current_user.has_multiple_accounts? %>
-					<div class="btn-group accounts pull-right">
+        <% if true #current_user.has_multiple_accounts? %>
+          <div class="btn-group accounts pull-right">
           <button type="button" class="btn btn-default"><%= current_user.name('human') %></button>
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
             <span class="fa fa-angle-down"></span>
@@ -37,16 +37,16 @@
           </button>
           <ul class="dropdown-menu dropdown-menu-right" role="menu">
             <% current_user.accounts.each do |account| %>
-							<li><%= link_to account.business_name, "#" %></li>
+              <li><%= link_to account.business_name, "#" %></li>
             <% end %>
           </ul>
         </div>
-				<% end %>
-			<% end %>
-		<% when "donations" %>
-			<% case action_name %>
-			<% when "index" %>
-				<div class="btn-group export pull-right">
+        <% end %>
+      <% end %>
+    <% when "donations" %>
+      <% case action_name %>
+      <% when "index" %>
+        <div class="btn-group export pull-right">
           <button type="button" class="btn btn-default">Export</button>
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
             <span class="fa fa-angle-down"></span>
@@ -58,14 +58,14 @@
           </ul>
         </div>
         <button type="button" class="btn btn-default pull-right filter-donations">Filter Donations</button>
-			<% end %>
-		<% when "funds" %>
-			<% case action_name %>
-			<% when "index" %>
+      <% end %>
+    <% when "funds" %>
+      <% case action_name %>
+      <% when "index" %>
         <button type="button" class="btn btn-default pull-right">New Fundraiser</button>
-			<% end %>
-		<% end %>
-	</div>
+      <% end %>
+    <% end %>
+  </div>
 </div>
 
 

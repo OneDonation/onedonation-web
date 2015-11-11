@@ -1,5 +1,5 @@
 class Fund < ActiveRecord::Base
-	include Tokenable
+  include Tokenable
 
   #                                Attributes
   # -----------------------------------------------------------------------------
@@ -52,14 +52,14 @@ class Fund < ActiveRecord::Base
   #########################
 
   def raised
-  	Float(donations.sum(:amount))/100
+    Float(donations.sum(:amount))/100
   end
 
   def pecent_raised
-  	((raised/goal)*100).ceil
+    ((raised/goal)*100).ceil
   end
 
   def goal
-  	Float(read_attribute(:goal))/100
+    Float(read_attribute(:goal))/100
   end
 end

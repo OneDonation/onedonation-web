@@ -4,10 +4,10 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_model
-  # before_action :check_account_complete?
-  before_action :default_breadcrumb
+  # before_action :default_breadcrumb
   layout :layout_by_subdomain
-  helper_method :subdomain, :current_account
+  helper_method :current_account,
+                :subdomain
 
   def index
   end
@@ -39,12 +39,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def check_account_complete?
-    if user_signed_in? && !current_account.has_stripe_id?
-      redirect_to setup_stripe_account_path
-    end
-  end
-
   def default_breadcrumb
     if user_signed_in?
       if current_user.accounts.any?
@@ -62,7 +56,7 @@ class ApplicationController < ActionController::Base
   end
 
   def subdomain
-  	request.subdomain
+    request.subdomain
   end
 
   def configure_permitted_parameters

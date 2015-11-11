@@ -14,19 +14,12 @@ gem 'jbuilder'
 
 # UI/Structure
 gem 'animate-rails'
-gem 'bootstrap-sass'
-gem 'bitters'
-gem 'bourbon'
 gem 'breadcrumbs_on_rails'
 gem 'coffeebeans'
-gem 'font-awesome-sass'
-gem 'neat'
-gem 'refills'
 gem 'simple_form'
 
 gem 'country_select'
 gem 'kaminari'
-gem 'kaminari-bootstrap'
 
 # Authentication
 gem 'devise'
@@ -36,8 +29,6 @@ gem 'omniauth-stripe-connect'
 # DB
 gem 'pg'
 gem 'faker'
-# gem 'carmen'
-# gem 'carmen-rails'
 gem 'chronic'
 gem 'attr_encrypted'
 

@@ -26,24 +26,24 @@ class Metadata < ActiveRecord::Base
 
   # Enums
   #########################
-  enum meta_type: [
-    :address,
-    :email,
-    :phone,
-    :website,
-    :social_account,
-    :date
-  ]
-  enum meta_sub_type: [
-    :custom,
-    :home,
-    :work,
-    :birthday,
-    :anniversary,
-    :facebook,
-    :twitter,
-    :linkedin
-  ]
+  enum meta_type: {
+    address: 0,
+    email: 1,
+    phone: 2,
+    website: 3,
+    social_account: 4,
+    date: 5
+  }
+  enum meta_sub_type: {
+    custom: 0,
+    home: 1,
+    work: 2,
+    birthday: 3,
+    anniversary: 4,
+    facebook: 5,
+    twitter: 6,
+    linkedin: 7
+  }
 
   # Relationships
   #########################

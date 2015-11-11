@@ -9,7 +9,6 @@ class Admin < ActiveRecord::Base
          :confirmable,
          :lockable
 
-
   #                                Attributes
   # -----------------------------------------------------------------------------
   # |           Name          |       Type        |         Description         |
@@ -38,7 +37,11 @@ class Admin < ActiveRecord::Base
 
   # Enums
   #########################
-  enum permission: [:admin, :employee, :support]
+  enum permission: {
+    admin: 0,
+    employee: 1,
+    support: 2
+  }
 
   # Relationships
   #########################
