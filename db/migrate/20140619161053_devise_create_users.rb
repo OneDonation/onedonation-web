@@ -10,9 +10,20 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.integer :age
       t.integer :gender
       t.string  :username
-      t.string :stripe_customer_id
-      t.string :stripe_subscription_id
-      t.string :stripe_default_source
+      t.string  :business_name
+      t.string  :business_url
+      t.string  :country
+      t.string  :timezone
+      t.integer :entity_type, default: 0
+      t.boolean :current, default: false
+      t.string  :stripe_customer_id
+      t.string  :stripe_account_id
+      t.string  :stripe_default_source
+      t.string  :stripe_statement_descriptor
+      t.jsonb   :stripe_tos_acceptance, null: false, default: '{}'
+      t.jsonb   :stripe_legal_entity,  null: false, default: '{}'
+      t.jsonb   :stripe_verification
+
 
       ## Database authenticatable
       t.string :email,              null: false, default: ""
@@ -54,5 +65,10 @@ class DeviseCreateUsers < ActiveRecord::Migration
     add_index :users, :reset_password_token, unique: true
     add_index :users, :confirmation_token,   unique: true
     add_index :users, :unlock_token,         unique: true
+    add_index :users, :country
+    add_index :users, :stripe_account_id
+    add_index :users, :stripe_tos_acceptance, using: :gin
+    add_index :users, :stripe_legal_entity, using: :gin
+    add_index :users, :stripe_verification, using: :gin
   end
 end

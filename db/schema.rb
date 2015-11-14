@@ -11,44 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140723141023) do
+ActiveRecord::Schema.define(version: 20140626193722) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "accounts", force: :cascade do |t|
-    t.string   "uid"
-    t.string   "slug"
-    t.integer  "owner_id"
-    t.string   "stripe_account_id"
-    t.string   "encrypted_stripe_secret_key"
-    t.string   "encrypted_stripe_publishable_key"
-    t.integer  "stripe_verification_status"
-    t.string   "stripe_subscription_id"
-    t.string   "stripe_subscription_status"
-    t.string   "stripe_plan_id"
-    t.string   "stripe_plan_name"
-    t.string   "email"
-    t.string   "country"
-    t.string   "business_name"
-    t.string   "business_url"
-    t.string   "support_phone"
-    t.string   "statement_descriptor"
-    t.integer  "account_type",                     default: 0
-    t.boolean  "current",                          default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "accounts", ["country"], name: "index_accounts_on_country", using: :btree
-  add_index "accounts", ["email"], name: "index_accounts_on_email", using: :btree
-  add_index "accounts", ["owner_id"], name: "index_accounts_on_owner_id", using: :btree
-  add_index "accounts", ["slug"], name: "index_accounts_on_slug", unique: true, using: :btree
-  add_index "accounts", ["stripe_account_id"], name: "index_accounts_on_stripe_account_id", using: :btree
-  add_index "accounts", ["stripe_plan_id"], name: "index_accounts_on_stripe_plan_id", using: :btree
-  add_index "accounts", ["stripe_subscription_id"], name: "index_accounts_on_stripe_subscription_id", using: :btree
-  add_index "accounts", ["stripe_verification_status"], name: "index_accounts_on_stripe_verification_status", using: :btree
-  add_index "accounts", ["uid"], name: "index_accounts_on_uid", unique: true, using: :btree
 
   create_table "admins", force: :cascade do |t|
     t.string   "uid"
@@ -84,29 +50,27 @@ ActiveRecord::Schema.define(version: 20140723141023) do
 
   create_table "donations", force: :cascade do |t|
     t.string   "uid"
-    t.integer  "user_id"
+    t.integer  "recipient_id"
     t.integer  "donor_id"
     t.integer  "fund_id"
-    t.string   "stripe_id"
-    t.boolean  "livemode"
-    t.boolean  "paid"
+    t.string   "charge_id"
+    t.string   "customer_id"
+    t.boolean  "paid",                 default: false
     t.string   "status"
     t.string   "amount"
     t.string   "currency"
-    t.boolean  "refunded"
-    t.json     "source"
-    t.boolean  "captured"
-    t.string   "balance_transaction"
+    t.boolean  "refunded",             default: false
+    t.integer  "amount_refunded"
+    t.string   "source_id"
+    t.jsonb    "source",               default: {},    null: false
+    t.boolean  "captured",             default: false
     t.string   "failure_message"
     t.string   "failure_code"
-    t.integer  "amount_refunded"
-    t.string   "customer"
-    t.string   "invoice"
     t.text     "description"
-    t.json     "dispute"
-    t.json     "metadata"
+    t.jsonb    "dispute",              default: {},    null: false
+    t.jsonb    "metadata",             default: {},    null: false
     t.string   "statement_descriptor"
-    t.json     "fraud_details"
+    t.jsonb    "fraud_details",        default: {},    null: false
     t.string   "receipt_email"
     t.string   "receipt_number"
     t.string   "destination"
@@ -115,64 +79,56 @@ ActiveRecord::Schema.define(version: 20140723141023) do
     t.datetime "updated_at"
   end
 
+  add_index "donations", ["charge_id"], name: "index_donations_on_charge_id", using: :btree
   add_index "donations", ["currency"], name: "index_donations_on_currency", using: :btree
-  add_index "donations", ["customer"], name: "index_donations_on_customer", using: :btree
+  add_index "donations", ["customer_id"], name: "index_donations_on_customer_id", using: :btree
   add_index "donations", ["destination"], name: "index_donations_on_destination", using: :btree
   add_index "donations", ["donor_id"], name: "index_donations_on_donor_id", using: :btree
   add_index "donations", ["fund_id"], name: "index_donations_on_fund_id", using: :btree
-  add_index "donations", ["invoice"], name: "index_donations_on_invoice", using: :btree
   add_index "donations", ["paid"], name: "index_donations_on_paid", using: :btree
+  add_index "donations", ["recipient_id"], name: "index_donations_on_recipient_id", using: :btree
   add_index "donations", ["refunded"], name: "index_donations_on_refunded", using: :btree
   add_index "donations", ["status"], name: "index_donations_on_status", using: :btree
-  add_index "donations", ["stripe_id"], name: "index_donations_on_stripe_id", using: :btree
   add_index "donations", ["uid"], name: "index_donations_on_uid", using: :btree
-  add_index "donations", ["user_id"], name: "index_donations_on_user_id", using: :btree
 
   create_table "funds", force: :cascade do |t|
     t.string   "uid"
-    t.integer  "user_id"
-    t.integer  "account_id"
+    t.integer  "owner_id"
+    t.boolean  "group_fund",           default: false
     t.string   "name"
+    t.string   "url"
     t.integer  "category"
-    t.text     "description"
+    t.integer  "status"
     t.date     "ends_at"
     t.integer  "goal"
-    t.string   "slug"
     t.string   "statement_descriptor"
-    t.string   "state"
-    t.boolean  "org_contributions"
+    t.text     "description"
     t.string   "website"
-    t.string   "street"
-    t.string   "apt_suite"
-    t.string   "city"
-    t.string   "postal_code"
-    t.string   "country"
-    t.text     "reciept_message"
+    t.text     "receipt_message"
     t.string   "thank_you_reply_to"
     t.string   "thank_you_subject"
     t.text     "thank_you_body"
-    t.string   "avatar"
+    t.string   "thumbnail"
     t.string   "header"
     t.string   "primary_color"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "funds", ["account_id"], name: "index_funds_on_account_id", using: :btree
-  add_index "funds", ["slug"], name: "index_funds_on_slug", using: :btree
-  add_index "funds", ["state"], name: "index_funds_on_state", using: :btree
+  add_index "funds", ["owner_id"], name: "index_funds_on_owner_id", using: :btree
+  add_index "funds", ["status"], name: "index_funds_on_status", using: :btree
   add_index "funds", ["uid"], name: "index_funds_on_uid", unique: true, using: :btree
-  add_index "funds", ["user_id"], name: "index_funds_on_user_id", using: :btree
+  add_index "funds", ["url"], name: "index_funds_on_url", using: :btree
 
   create_table "memberships", force: :cascade do |t|
     t.integer  "user_id"
-    t.integer  "account_id"
+    t.integer  "fund_id"
     t.integer  "permission", default: 1
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "memberships", ["account_id"], name: "index_memberships_on_account_id", using: :btree
+  add_index "memberships", ["fund_id"], name: "index_memberships_on_fund_id", using: :btree
   add_index "memberships", ["permission"], name: "index_memberships_on_permission", using: :btree
   add_index "memberships", ["user_id"], name: "index_memberships_on_user_id", using: :btree
 
@@ -216,15 +172,24 @@ ActiveRecord::Schema.define(version: 20140723141023) do
     t.integer  "age"
     t.integer  "gender"
     t.string   "username"
-    t.string   "stripe_customer_id"
-    t.string   "stripe_subscription_id"
+    t.string   "business_name"
+    t.string   "business_url"
+    t.string   "country"
+    t.string   "timezone"
+    t.integer  "entity_type",                 default: 0
+    t.boolean  "current",                     default: false
+    t.string   "stripe_account_id"
     t.string   "stripe_default_source"
-    t.string   "email",                  default: "", null: false
-    t.string   "encrypted_password",     default: "", null: false
+    t.string   "stripe_statement_descriptor"
+    t.jsonb    "stripe_tos_acceptance",       default: {},    null: false
+    t.jsonb    "stripe_legal_entity",         default: {},    null: false
+    t.jsonb    "stripe_verification"
+    t.string   "email",                       default: "",    null: false
+    t.string   "encrypted_password",          default: "",    null: false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0,  null: false
+    t.integer  "sign_in_count",               default: 0,     null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -233,7 +198,7 @@ ActiveRecord::Schema.define(version: 20140723141023) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string   "unconfirmed_email"
-    t.integer  "failed_attempts",        default: 0,  null: false
+    t.integer  "failed_attempts",             default: 0,     null: false
     t.string   "unlock_token"
     t.datetime "locked_at"
     t.datetime "created_at"
@@ -242,9 +207,14 @@ ActiveRecord::Schema.define(version: 20140723141023) do
 
   add_index "users", ["age"], name: "index_users_on_age", using: :btree
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
+  add_index "users", ["country"], name: "index_users_on_country", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["gender"], name: "index_users_on_gender", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["stripe_account_id"], name: "index_users_on_stripe_account_id", using: :btree
+  add_index "users", ["stripe_legal_entity"], name: "index_users_on_stripe_legal_entity", using: :gin
+  add_index "users", ["stripe_tos_acceptance"], name: "index_users_on_stripe_tos_acceptance", using: :gin
+  add_index "users", ["stripe_verification"], name: "index_users_on_stripe_verification", using: :gin
   add_index "users", ["uid"], name: "index_users_on_uid", unique: true, using: :btree
   add_index "users", ["unlock_token"], name: "index_users_on_unlock_token", unique: true, using: :btree
   add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
