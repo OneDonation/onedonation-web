@@ -7,7 +7,6 @@ class RegistrationsController < Devise::RegistrationsController
   def new
     build_resource({})
     set_minimum_password_length
-    resource.accounts.build
     yield resource if block_given?
     respond_with self.resource
   end

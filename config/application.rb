@@ -6,7 +6,7 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module Donations
+module OneDonation
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -22,7 +22,7 @@ module Donations
     # config.i18n.default_locale = :de
 
     config.assets.precompile += %w( devise.css devise.js )
-    config.active_record.schema_format = :sql
+    config.active_record.schema_format = :ruby
 
   end
 end
