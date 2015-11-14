@@ -1,14 +1,4 @@
 class Admin < ActiveRecord::Base
-  include Tokenable
-  devise :database_authenticatable,
-         :registerable,
-         :recoverable,
-         :rememberable,
-         :trackable,
-         :validatable,
-         :confirmable,
-         :lockable
-
   #                                Attributes
   # -----------------------------------------------------------------------------
   # |           Name          |       Type        |         Description         |
@@ -34,6 +24,16 @@ class Admin < ActiveRecord::Base
   # | :unlock_token           |     :string       |                             |
   # | :locked_at              |     :datetime     |                             |
   # -----------------------------------------------------------------------------
+
+  include Tokenable
+  devise :database_authenticatable,
+         :registerable,
+         :recoverable,
+         :rememberable,
+         :trackable,
+         :validatable,
+         :confirmable,
+         :lockable
 
   # Enums
   #########################

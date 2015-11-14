@@ -1,5 +1,4 @@
 class Metadata < ActiveRecord::Base
-  include Tokenable
 
   #                                Attributes
   # -----------------------------------------------------------------------------
@@ -23,6 +22,7 @@ class Metadata < ActiveRecord::Base
   # | : username              |     :string       |                             |
   # | : value                 |     :string       |                             |
   # -----------------------------------------------------------------------------
+  include Tokenable
 
   # Enums
   #########################
@@ -48,7 +48,6 @@ class Metadata < ActiveRecord::Base
   # Relationships
   #########################
   belongs_to :user
-  belongs_to :account
 
   # Scopes
   #########################

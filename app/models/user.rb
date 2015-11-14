@@ -1,15 +1,4 @@
 class User < ActiveRecord::Base
-  include Tokenable
-  devise :database_authenticatable,
-         :registerable,
-         :recoverable,
-         :rememberable,
-         :trackable,
-         :validatable,
-         :confirmable,
-         :lockable,
-         :omniauthable,
-         omniauth_providers: [ :stripe_connect ]
 
   #                                Attributes
   # -----------------------------------------------------------------------------
@@ -36,10 +25,29 @@ class User < ActiveRecord::Base
   # | :unlock_token           |     :string       |                             |
   # | :locked_at              |     :datetime     |                             |
   # -----------------------------------------------------------------------------
+  include Tokenable
+  devise :database_authenticatable,
+         :registerable,
+         :recoverable,
+         :rememberable,
+         :trackable,
+         :validatable,
+         :confirmable,
+         :lockable,
+         :omniauthable,
+         omniauth_providers: [ :stripe_connect ]
 
   # Enums
   #########################
-  enum gender: [:male, :female]
+  enum stripe_verification_status: {
+    unverified: 0,
+    pending: 1,
+    verified: 2
+  }
+  enum gender: {
+    male: 0,
+    female: 1
+  }
 
   # Relationships
   #########################
@@ -50,24 +58,14 @@ class User < ActiveRecord::Base
   has_many :social_accounts,  -> { where meta_type: 4 }
   has_many :dates,            -> { where meta_type: 5 }
   has_many :metadata, class_name: "Metadata", dependent: :destroy
-  has_many :accounts, foreign_key: :owner_id, dependent: :destroy
-  has_many :donations, dependent: :destroy
-  has_many :funds, through: :accounts
-  has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id"
-  has_one :current_account, -> { where(current: true) }, class_name: "Account", foreign_key: :owner_id
-
-  accepts_nested_attributes_for :accounts
+  has_many :donations, foreign_key: :recipient_id
+  has_many :contributions, class_name: "Donation", foreign_key: :donor_id
+  has_many :funds, foreign_key: "owner_id"
+  has_many :memberships, dependent: :destroy
+  has_many :group_funds, through: :memberships, foreign_key: :fund_id
 
   def donors(order_by = nil)
-    donations.includes(:donors).donors.order(order_by).uniq
-  end
-
-  def recieved_donations
-    Donation.where(fund_id: funds.pluck(:id), user_id: id)
-  end
-
-  def donations
-    Donation.by_person(id)
+    User.where(id: donations.select(:donor_id).uniq)
   end
 
   def donated_funds
@@ -79,6 +77,10 @@ class User < ActiveRecord::Base
 
   # Validations
   #########################
+  validates :first_name, presence: true
+  validates :last_name, presence: true
+  validates :email, presence: true
+  validates :username, uniqueness: true
 
   # Class Methods
   #########################
@@ -92,14 +94,6 @@ class User < ActiveRecord::Base
     when "human"
       "#{first_name} #{last_name}"
     end
-  end
-
-  def has_multiple_accounts?
-    accounts.count > 1
-  end
-
-  def fundraising?
-    funds.any?
   end
 
 end

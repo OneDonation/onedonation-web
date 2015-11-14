@@ -1,5 +1,4 @@
 class Fund < ActiveRecord::Base
-  include Tokenable
 
   #                                Attributes
   # -----------------------------------------------------------------------------
@@ -31,22 +30,42 @@ class Fund < ActiveRecord::Base
   # | :header                 |     :string       |                             |
   # | :primary_color          |     :string       |                             |
   # -----------------------------------------------------------------------------
+  include Tokenable
 
   # Enums
   #########################
+  enum category: {
+    business: 0,
+    charity: 1,
+    community: 2,
+    creative: 3,
+    events: 4,
+    faith: 5,
+    family: 6,
+    national_news: 7,
+    newleyweds: 8,
+    other: 9,
+    travel: 10,
+    wish: 11
+  }
 
   # Relationships
   #########################
-  belongs_to :account
-  belongs_to :user
+  has_many :memberships, dependent: :destroy
+  has_many :members, through: :memberships, source: :user
+  belongs_to :owner, class_name: "User", foreign_key: :owner_id
   has_many :donations
 
   # Scopes
   #########################
-  scope :by_donor, -> (user_id) { includes(:donations).where(donations: { donor_id: user_id }) }
+  scope :by_donor,    -> (donor_id) { where(donations: { donor_id: donor_id }) }
+  scope :personal,    -> { where(group_fund: false) }
+  scope :group_fund,  -> { where(group_fund: true) }
 
   # Validations
   #########################
+  validates :owner_id, presence: true
+  validates :url, presence: true, format: { with: /\A[0-9A-Za-z\-]+\z/ }
 
   # Class Methods
   #########################

@@ -1,5 +1,4 @@
 class Donation < ActiveRecord::Base
-  include Tokenable
 
   #                                Attributes
   # -----------------------------------------------------------------------------
@@ -27,6 +26,7 @@ class Donation < ActiveRecord::Base
   # | :stripe_failure_code    |     :string       |                             |
   # | :statement_description  |     :string       |                             |
   # -----------------------------------------------------------------------------
+  include Tokenable
 
   # Enums
   #########################
@@ -34,17 +34,21 @@ class Donation < ActiveRecord::Base
   # Relationships
   #########################
   belongs_to :donor, class_name: "User", foreign_key: "donor_id"
-  belongs_to :recipient, class_name: "user", foreign_key: "user_id"
+  belongs_to :recipient, class_name: "user", foreign_key: "recipient_id"
   belongs_to :fund
 
   # Scopes
   #########################
   scope :cleared,    -> { where(captured: true, refunded: false) }
   scope :refunded,   -> { where(refunded: true) }
-  scope :by_person,   -> (user_id) { where("donations.donor_id = :person_id OR donations.user_id = :person_id", person_id: user_id) }
+  scope :by_person,  -> (user_id) { where("donations.donor_id = :person_id OR donations.user_id = :person_id", person_id: user_id) }
 
   # Validations
   #########################
+  validates :amount, presence: true
+  validates :recipient_id, presence: true
+  validates :donor_id, presence: true
+  validates :fund_id, presence: true
 
   # Class Methods
   #########################

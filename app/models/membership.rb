@@ -5,7 +5,7 @@ class Membership < ActiveRecord::Base
   # |           Name          |       Type        |         Description         |
   # | ----------------------- | ----------------- | --------------------------- |
   # | :user_id                |     :integer      |                             |
-  # | :account_id             |     :integer      |                             |
+  # | :fund_id                |     :integer      |                             |
   # -----------------------------------------------------------------------------
 
   # Enums
@@ -17,7 +17,7 @@ class Membership < ActiveRecord::Base
 
   # Relationships
   #########################
-  belongs_to :account
+  belongs_to :fund
   belongs_to :user
 
   # Scopes
@@ -25,6 +25,7 @@ class Membership < ActiveRecord::Base
 
   # Validations
   #########################
+  validates_uniqueness_of :user_id, scope: :fund_id
 
   # Class Methods
   #########################
