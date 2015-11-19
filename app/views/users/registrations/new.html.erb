@@ -5,44 +5,6 @@
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
         <%= devise_error_messages! %>
 
-        <%= f.fields_for :account do |account_builder| %>
-          <div class="form-group entity-types">
-            <%= f.label :entity_type, "Account Type" %>
-            <%= account_builder.label :entity_type, class: "radio-inline entity-option", for: "user_account_entity_type_donor" do %>
-              <%= account_builder.radio_button :entity_type, :donor, checked: "checked" %> <strong>Donor</strong>
-              <div class="entity-info hide">
-                <p>You're here to donate to someone else's fundraiser and don't want to raise any money yourself yet.</p>
-              </div>
-            <% end %>
-            <%= account_builder.label :entity_type, class: "radio-inline entity-option", for: "user_account_entity_type_personal" do %>
-              <%= account_builder.radio_button :entity_type, :personal %> <strong>Individual / Team</strong>
-              <div class="entity-info hide">
-                <p>You're an individual or team wanting to setup a fundraising page for your cause or trip .</p>
-              </div>
-            <% end %>
-            <%= account_builder.label :entity_type, class: "radio-inline entity-option", for: "user_account_entity_type_business" do %>
-              <%= account_builder.radio_button :entity_type, :business %> <strong>Business</strong>
-              <div class="entity-info hide">
-                <p>You're an Organization/Business wanting manage one or more fundraisers.</p>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-
-        <div class="form-group">
-          <div class="row">
-            <div class="col-sm-6 col-md-6">
-              <%= f.label :first_name %>
-              <%= f.email_field :first_name, class: "form-control", autofocus: true %>
-            </div>
-            <div class="col-sm-6 col-md-6">
-              <%= f.label :last_name %>
-              <%= f.email_field :last_name, class: "form-control" %>
-            </div>
-          </div>
-        </div>
-
-
         <div class="form-group">
           <%= f.label :email %>
           <%= f.email_field :email, class: "form-control" %>

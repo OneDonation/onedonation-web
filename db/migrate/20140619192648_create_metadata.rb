@@ -9,8 +9,8 @@ class CreateMetadata < ActiveRecord::Migration
       t.integer :meta_sub_type
       t.string  :custom
       t.date		:date
-      t.string	:street
-      t.string	:apt_suite
+      t.string	:line1
+      t.string	:line2
       t.string	:city
       t.string	:state
       t.string	:postal_code

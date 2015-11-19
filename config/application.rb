@@ -22,7 +22,7 @@ module OneDonation
     # config.i18n.default_locale = :de
 
     config.assets.precompile += %w( devise.css devise.js )
-    config.active_record.schema_format = :ruby
+    config.active_record.schema_format = :sql
 
   end
 end

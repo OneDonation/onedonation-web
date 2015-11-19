@@ -25,7 +25,8 @@ class User < ActiveRecord::Base
   # | :unlock_token           |     :string       |                             |
   # | :locked_at              |     :datetime     |                             |
   # -----------------------------------------------------------------------------
-  include Tokenable
+  include Tokenable,
+          Stripeable
   devise :database_authenticatable,
          :registerable,
          :recoverable,
@@ -33,12 +34,14 @@ class User < ActiveRecord::Base
          :trackable,
          :validatable,
          :confirmable,
-         :lockable,
-         :omniauthable,
-         omniauth_providers: [ :stripe_connect ]
+         :lockable
 
   # Enums
   #########################
+  enum entity_type: {
+    individual: 0,
+    company: 1
+  }
   enum stripe_verification_status: {
     unverified: 0,
     pending: 1,
@@ -60,6 +63,7 @@ class User < ActiveRecord::Base
   has_many :metadata, class_name: "Metadata", dependent: :destroy
   has_many :donations, foreign_key: :recipient_id
   has_many :contributions, class_name: "Donation", foreign_key: :donor_id
+  has_many :designations, class_name: "Donation", foreign_key: :designated_to
   has_many :funds, foreign_key: "owner_id"
   has_many :memberships, dependent: :destroy
   has_many :group_funds, through: :memberships, foreign_key: :fund_id
@@ -77,8 +81,12 @@ class User < ActiveRecord::Base
 
   # Validations
   #########################
-  validates :first_name, presence: true
-  validates :last_name, presence: true
+  attr_encrypted :stripe_publishable_key, key: Rails.application.secrets.encryption_key
+  attr_encrypted :stripe_secret_key, key: Rails.application.secrets.encryption_key
+  attr_encrypted :ssn_last_4, key: Rails.application.secrets.encryption_key
+
+  # validates :first_name, presence: true
+  # validates :last_name, presence: true
   validates :email, presence: true
   validates :username, uniqueness: true
 

@@ -1,7 +1,8 @@
 class RegistrationsController < Devise::RegistrationsController
   prepend_before_filter :require_no_authentication, only: [:new, :create, :cancel]
   prepend_before_filter :authenticate_scope!, only: [:edit, :update, :destroy]
-  helper_method :setting
+  before_action :configure_permitted_parameters
+  helper_method :setting, :step
 
   # GET /resource/sign_up
   def new
@@ -18,7 +19,7 @@ class RegistrationsController < Devise::RegistrationsController
     resource.save
     yield resource if block_given?
     if resource.persisted?
-      create_stripe_customer(resource, request)
+      resource.create_stripe_customer(request)
       if resource.active_for_authentication?
         set_flash_message :notice, :signed_up if is_flashing_format?
         sign_up(resource_name, resource)
@@ -35,7 +36,32 @@ class RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  def onboarding
+  def onboarding_step
+    @resource = current_user
+  end
+
+  def onboarding_progress
+    @resource = current_user
+    resource_updated = @resource.update_without_password(account_update_params)
+
+    if resource_updated
+      @resource.create_stripe_account(request.user_agent, request.remote_ip)
+      redirect_to onboarding_step_path, notice: "account created"
+    else
+      render :onboarding_step
+    end
+  end
+
+  def update_stripe
+    @resource = current_user
+    resource_updated = @resource.update_without_password(account_update_params)
+
+    if resource_updated
+      @resource.update_stripe_account(request)
+      redirect_to onboarding_step_path, notice: "account created"
+    else
+      render :onboarding_step
+    end
   end
 
   def finalize_account
@@ -118,7 +144,7 @@ class RegistrationsController < Devise::RegistrationsController
   # The path used after sign up. You need to overwrite this method
   # in your own RegistrationsController.
   def after_sign_up_path_for(resource)
-    onboarding_path(resource)
+    onboarding_step_path()
   end
 
   # The path used after sign up for inactive accounts. You need to overwrite
@@ -158,28 +184,75 @@ class RegistrationsController < Devise::RegistrationsController
     params[:setting]
   end
 
-  def create_stripe_customer(resource, request)
-    begin
-      stripe_customer = Stripe::Customer.create(
-                                          email: resource.email,
-                                          metadata: {
-                                            name: resource.name("human"),
-                                            signup_ip: request.remote_ip
-                                          }
-                                        )
-      resource.update(stripe_customer_id: stripe_customer.id)
-    rescue Stripe::APIError => e
-      Rails.logger.debug e.inspect
-      # TODO: Handle Stripe Errors at signup.
-    end
+  def step
+    @step ||= params[:step]
+  end
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(
+                                                 :entity_type,
+                                                 :country,
+                                                 :email,
+                                                 :password,
+                                                 :password_confirmation
+                                               )
+                                             }
+    devise_parameter_sanitizer.for(:account_update) { |u| u.permit(
+                                                      :email,
+                                                      :first_name,
+                                                      :last_name,
+                                                      :stripe_customer_id,
+                                                      :stripe_account_id,
+                                                      :stripe_default_source,
+                                                      :stripe_statement_descriptor,
+                                                      :stripe_tos_acceptance,
+                                                      :stripe_legal_entity,
+                                                      :stripe_verification,
+                                                      :encrypted_stripe_secret_key,
+                                                      :encrypted_stripe_publishable_key,
+                                                      :prefix,
+                                                      :first_name,
+                                                      :middle_name,
+                                                      :last_name,
+                                                      :suffix,
+                                                      :age,
+                                                      :gender,
+                                                      :business_name,
+                                                      :business_url,
+                                                      :encrypted_business_tax_id,
+                                                      :encrypted_business_vat_id,
+                                                      :business_line1,
+                                                      :business_line2,
+                                                      :business_city,
+                                                      :business_state,
+                                                      :business_postal_code,
+                                                      :business_country,
+                                                      :user_phone,
+                                                      :user_line1,
+                                                      :user_line2,
+                                                      :user_city,
+                                                      :user_state,
+                                                      :user_postal_code,
+                                                      :user_country,
+                                                      :user_phone,
+                                                      :ssn_last_4,
+                                                      :dob_month,
+                                                      :dob_day,
+                                                      :dob_year,
+                                                      :country,
+                                                      :timezone,
+                                                      :entity_type,
+                                                      :current,
+                                                      :password,
+                                                      :password_confirmation
+                                                      )
+                                                    }
   end
 
   def create_stripe_account(resource, params, request)
-    account = resource.accounts.first
     begin
       stripe_account = Stripe::Account.create(
-                                        managed: true,
-                                        country: resource.accounts.first.country,
+                                        country: resource.first.country,
                                         email: resource.email,
                                         legal_entity: params[:legal_entity],
                                         tos_acceptance: {
@@ -187,15 +260,22 @@ class RegistrationsController < Devise::RegistrationsController
                                           ip: request.remote_ip
                                         }
                                       )
-      account.update(
+      resource.update(
         stripe_account_id: stripe_account.id,
         stripe_secret_key: stripe_account.keys.secret,
         stripe_publishable_key: stripe_account.keys.publishable,
-        stripe_verification_status: stripe_account.legal_entity.verification.status
+        stripe_legal_entity: stripe_account.legal_entity,
+        stripe_verification: stripe_account.legal_entity.verification,
+        stripe_tos_acceptance: stripe_account.tos_acceptance
       )
     rescue Stripe::APIError => e
       Rails.logger.debug e.inspect
       # TODO: Handle Stripe Errors at signup.
     end
   end
+
+  # def update_without_password(params, *options)
+  #   params.delete(:email)
+  #   super(params)
+  # end
 end

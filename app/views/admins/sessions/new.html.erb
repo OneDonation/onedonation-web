@@ -1,6 +1,8 @@
 <h2>Sign in</h2>
+  <%= request.remote_ip %>
+  <%= request.user_agent %>
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+<%= form_for(resource, as: resource_name, url: admin_new_session_path) do |f| %>
   <div><%= f.label :email %><br />
   <%= f.email_field :email, autofocus: true %></div>
 

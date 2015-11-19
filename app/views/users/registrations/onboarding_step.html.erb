@@ -1,0 +1,139 @@
+<% if current_user.stripe_account_id.present? %>
+  <%= Stripe::Account.retrieve(current_user.stripe_account_id) %>
+<% end %>
+
+<%= form_for(@resource, as: :user, url: (current_user.stripe_account_id.present? ? update_stripe_path : onboarding_progress_path))  do |f| %>
+  <% if @resource && @resource.errors.any? %>
+    <ul>
+      <% @resource.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+  <fieldset>
+    <legend>Account Type</legend>
+    <div class="form-group">
+      <div class="radio">
+        <%= label_tag :entity_type, for: "entity_type_individual" do %>
+          <%= radio_button_tag :entity_type, :individual, selected: true %> Individual
+        <% end %>
+      </div>
+      <div class="radio">
+        <%= label_tag :entity_type, for: "entity_type_company" do %>
+          <%= radio_button_tag :entity_type, :company %> Company
+        <% end %>
+      </div>
+    </div>
+  </fieldset>
+  <fieldset class="personal-items">
+    <legend>Contact Details</legend>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-6 col-md-6">
+          <%= f.label :first_name, "First Name" %>
+          <%= f.text_field :first_name, class: "form-control", autofocus: true %>
+        </div>
+        <div class="col-sm-6 col-md-6">
+          <%= f.label :first_name, "Last Name" %>
+          <%= f.text_field :last_name, class: "form-control" %>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= f.label :dob_month, "Birthday", for: "stripe_user_dob_month" %>
+      <%= f.text_field :dob_month, class: "form-control", placeholder: "month" %>
+      <%= f.text_field :dob_day, class: "form-control", placeholder: "day" %>
+      <%= f.text_field :dob_year, class: "form-control", placeholder: "year" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :ssn_last_4, "Last four of your social" %>
+      <%= f.password_field :ssn_last_4 %>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-6 col-md-6">
+          <%= f.label :user_line1, "Address" %>
+          <%= f.text_field :user_line1, class: "form-control" %>
+        </div>
+        <div class="col-sm-6 col-md-6">
+          <%= f.label :user_line2, "Apt/Ste" %>
+          <%= f.text_field :user_line2, class: "form-control" %>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-5 col-md-5">
+          <%= f.label :user_city, "City" %>
+          <%= f.text_field :user_city, class: "form-control" %>
+        </div>
+        <div class="col-sm-4 col-md-4">
+          <%= f.label :user_state, "State" %>
+          <%= f.text_field :user_state, class: "form-control" %>
+        </div>
+        <div class="col-sm-3 col-md-3">
+          <%= f.label :user_postal_code, "Postal Code" %>
+          <%= f.text_field :user_postal_code, class: "form-control" %>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= f.label :user_country %>
+      <%= f.country_select :user_country, stripe_country_options(request), class: "form-control" %>
+    </div>
+  </fieldset>
+
+  <fieldset class="personal-items">
+    <legend>Business Details</legend>
+    <div class="form-group">
+      <%= f.label :business_name %>
+      <%= f.text_field :business_name, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :business_url %>
+      <%= f.text_field :business_url, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-6 col-md-6">
+          <%= f.label :business_line1, "Address" %>
+          <%= f.text_field :business_line1, class: "form-control" %>
+        </div>
+        <div class="col-sm-6 col-md-6">
+          <%= f.label :business_line2, "Apt/Ste" %>
+          <%= f.text_field :business_line2, class: "form-control" %>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-5 col-md-5">
+          <%= f.label :business_city, "City" %>
+          <%= f.text_field :business_city, class: "form-control" %>
+        </div>
+        <div class="col-sm-4 col-md-4">
+          <%= f.label :business_state, "State" %>
+          <%= f.text_field :business_state, class: "form-control" %>
+        </div>
+        <div class="col-sm-3 col-md-3">
+          <%= f.label :business_postal_code, "Postal Code" %>
+          <%= f.text_field :business_postal_code, class: "form-control" %>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= f.label :business_country %>
+      <%= f.country_select :business_country, stripe_country_options(request), class: "form-control" %>
+    </div>
+  </fieldset>
+
+  <div class="form-group">
+    <%= label_tag :stripe_terms, "Accept Stripe's terms of service" %>
+    <%= check_box_tag :stripe_terms, nil, class: "form-control", required: true%>
+  </div>
+
+  <div class="form-group">
+    <%= f.submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>
+

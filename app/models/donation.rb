@@ -35,6 +35,7 @@ class Donation < ActiveRecord::Base
   #########################
   belongs_to :donor, class_name: "User", foreign_key: "donor_id"
   belongs_to :recipient, class_name: "user", foreign_key: "recipient_id"
+  belongs_to :designated_user, class_name: "user", foreign_key: "designated_to"
   belongs_to :fund
 
   # Scopes
@@ -45,8 +46,8 @@ class Donation < ActiveRecord::Base
 
   # Validations
   #########################
-  validates :amount, presence: true
-  validates :recipient_id, presence: true
+  validates :stripe_amount, presence: true
+  validates :recipient_id, presence: true, unless: Proc.new { |donation| donation.designated_to.present? }
   validates :donor_id, presence: true
   validates :fund_id, presence: true
 

@@ -2,8 +2,8 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
-  before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_model
+  before_action :ensure_stripe_data
   # before_action :default_breadcrumb
   layout :layout_by_subdomain
   helper_method :current_account,
@@ -51,27 +51,13 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def current_account
-    @current_account ||= current_user.current_account
+  def ensure_stripe_data
+    if user_signed_in?
+      current_user.create_stripe_customer(request) unless current_user.stripe_customer_id
+    end
   end
 
   def subdomain
     request.subdomain
-  end
-
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(
-                                                 :first_name,
-                                                 :last_name,
-                                                 :email,
-                                                 :password,
-                                                 :password_confirmation,
-                                                 accounts_attributes: [
-                                                     :country,
-                                                     :current
-                                                 ]
-                                               )
-                                             }
-
   end
 end

@@ -41,6 +41,10 @@ gem 'stripe'
 gem 'stripe_event'
 gem 'money-rails'
 
+# Geolacation
+gem 'geocoder'
+gem 'httparty'
+
 # Development
 group :development, :test do
 	gem 'sqlite3'

@@ -2,6 +2,18 @@ class DeviseCreateUsers < ActiveRecord::Migration
   def change
     create_table(:users) do |t|
       t.string  :uid
+      t.string  :username
+      t.string  :email,              null: false, default: ""
+      t.string  :stripe_customer_id
+      t.string  :stripe_account_id
+      t.string  :stripe_default_source
+      t.string  :stripe_statement_descriptor
+      t.jsonb   :stripe_tos_acceptance, null: false, default: '{}'
+      t.jsonb   :stripe_legal_entity,  null: false, default: '{}'
+      t.jsonb   :stripe_verification,  null: false, default: '{}'
+      t.integer :stripe_verification_status
+      t.string  :encrypted_stripe_secret_key
+      t.string  :encrypted_stripe_publishable_key
       t.string  :prefix
       t.string  :first_name
       t.string  :middle_name
@@ -9,24 +21,35 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.string  :suffix
       t.integer :age
       t.integer :gender
-      t.string  :username
+      t.integer :entity_type
       t.string  :business_name
       t.string  :business_url
+      t.string  :encrypted_business_tax_id
+      t.string  :encrypted_business_vat_id
+      t.string  :business_line1
+      t.string  :business_line2
+      t.string  :business_city
+      t.string  :business_state
+      t.string  :business_postal_code
+      t.string  :business_country
+      t.string  :user_phone
+      t.string  :user_line1
+      t.string  :user_line2
+      t.string  :user_city
+      t.string  :user_state
+      t.string  :user_postal_code
+      t.string  :user_country
+      t.string  :encrypted_ssn_last_4
+      t.string  :dob_month
+      t.string  :dob_day
+      t.string  :dob_year
       t.string  :country
       t.string  :timezone
-      t.integer :entity_type, default: 0
+      t.integer :account_type, default: 0
       t.boolean :current, default: false
-      t.string  :stripe_customer_id
-      t.string  :stripe_account_id
-      t.string  :stripe_default_source
-      t.string  :stripe_statement_descriptor
-      t.jsonb   :stripe_tos_acceptance, null: false, default: '{}'
-      t.jsonb   :stripe_legal_entity,  null: false, default: '{}'
-      t.jsonb   :stripe_verification
-
+      t.integer :stripe_status
 
       ## Database authenticatable
-      t.string :email,              null: false, default: ""
       t.string :encrypted_password, null: false, default: ""
 
       ## Recoverable

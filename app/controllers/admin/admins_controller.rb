@@ -2,6 +2,10 @@ class Admin::AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :destroy]
   helper_method :sort, :direction
 
+  # GET /dashboard
+  def dashboard
+  end
+
   # GET /admins
   def index
     @admins = Admin.all
