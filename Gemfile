@@ -45,6 +45,11 @@ gem 'money-rails'
 gem 'geocoder'
 gem 'httparty'
 
+
+# Admin Gems
+##########################
+gem 'font-awesome-sass'
+
 # Development
 group :development, :test do
 	gem 'sqlite3'
