@@ -37,7 +37,11 @@ Rails.application.routes.draw do
       resources :donations
       resources :fundraisers, controller: :funds
       resources :metadata
-      resources :users
+      resources :users, constraints: { username: /[0-9A-Za-z\.\-\_]+/ } do
+        member do
+          get '/:selected_tab' => 'users#show', as: :selected_tab, constraints: { selected_tab: /(?!edit|signup)([a-zA-Z\-]+)/ }
+        end
+      end
     end
   end
 

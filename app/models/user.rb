@@ -39,8 +39,9 @@ class User < ActiveRecord::Base
   # Enums
   #########################
   enum entity_type: {
-    individual: 0,
-    company: 1
+    donor: 0,
+    individual: 1,
+    company: 2
   }
   enum stripe_verification_status: {
     unverified: 0,
@@ -78,20 +79,27 @@ class User < ActiveRecord::Base
 
   # Scopes
   #########################
+  scope :non_donors, -> { where.not(entity_type: 0) }
 
   # Validations
   #########################
   attr_encrypted :stripe_publishable_key, key: Rails.application.secrets.encryption_key
   attr_encrypted :stripe_secret_key, key: Rails.application.secrets.encryption_key
+  attr_encrypted :business_tax_id, key: Rails.application.secrets.encryption_key
+  attr_encrypted :business_vat_id, key: Rails.application.secrets.encryption_key
   attr_encrypted :ssn_last_4, key: Rails.application.secrets.encryption_key
 
   # validates :first_name, presence: true
   # validates :last_name, presence: true
   validates :email, presence: true
-  validates :username, uniqueness: true
+  validates :username, uniqueness: true, format:  /\A[0-9A-Za-z\.\-\_]+\z/
 
   # Class Methods
   #########################
+
+  def to_param
+    username
+  end
 
   def name(size)
     case size

@@ -1,0 +1,66 @@
+<%= simple_form_for([:admin, @user]) do |f| %>
+  <%= hidden_field_tag :selected_tab, selected_tab %>
+  <%= f.input :username %>
+  <fieldset>
+    <div class="row">
+      <div class="col-md-6">
+        <legend>Account Contact</legend>
+        <div class="row">
+          <div class="col-md-6">
+            <%= f.input :first_name %>
+          </div>
+          <div class="col-md-6">
+            <%= f.input :last_name %>
+          </div>
+        </div>
+        <%= f.input :email %>
+        <%= f.input :user_line1, label: "Line 1" %>
+        <%= f.input :user_line2, label: "Line 2" %>
+        <div class="row">
+          <div class="col-md-6">
+           <%= f.input :user_city, label: "City" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.input :user_state, label: "State" %>
+          </div>
+        </div>
+        <%= f.input :user_country, label: "Country", input_html: { readonly: true, disabled: true} %>
+      </div>
+      <div class="col-md-6">
+        <legend>Business Contact</legend>
+        <%= f.input :business_name, label: "Name" %>
+        <%= f.input :business_url, label: "URL" %>
+        <div class="row">
+          <div class="col-md-6">
+            <%= f.input :business_tax_id, label: "Tax ID" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.input :business_vat_id, label: "Vat ID" %>
+          </div>
+        </div>
+        <%= f.input :business_line1, label: "Line 1" %>
+        <%= f.input :business_line2, label: "Line 2" %>
+        <div class="row">
+          <div class="col-md-6">
+           <%= f.input :business_city, label: "City" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.input :business_state, label: "State" %>
+          </div>
+        </div>
+        <%= f.input :business_country, label: "Country", input_html: { readonly: true, disabled: true} %>
+      </div>
+    </div>
+  </fieldset>
+
+
+
+  <div class="btn-toolbar">
+    <div class="btn-group">
+      <%= link_to "Cancel", admin_user_path(@user), class: "btn btn-default" %>
+    </div>
+    <div class="btn-group">
+      <%= f.submit class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>

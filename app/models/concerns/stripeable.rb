@@ -97,6 +97,7 @@ module Stripeable
           stripe_publishable_key: stripe_account.keys.publishable,
           stripe_legal_entity: stripe_account.legal_entity.to_json,
           stripe_verification: stripe_account.verification.to_json,
+          stripe_verification_status: stripe_account.legal_entity.verification.status,
           stripe_tos_acceptance: stripe_account.tos_acceptance.to_json
         )
       rescue Stripe::APIError => e
@@ -154,7 +155,7 @@ module Stripeable
 
 
     def payout_currency
-      base_country = entity_type == "company" ? business_company : user_country
+      base_country = entity_type == "company" ? business_country : user_country
       case base_country
       when "US"
         "USD"
@@ -203,6 +204,10 @@ module Stripeable
       when "PT"
         "EUR"
       end
+    end
+
+    def has_stripe_account?
+      stripe_account_id.present?
     end
   end
 end

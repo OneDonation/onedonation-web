@@ -1,0 +1,66 @@
+<% default_sort = "first_name" %>
+<h1 class="page-header">Users</h1>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>
+          <%= link_to admin_users_path(sort: "first_name", direction: sort_direction) do %>
+            <%= th_sort("Name", "first_name", default_sort) %>
+          <% end %>
+        </th>
+        <th>
+          <%= link_to admin_users_path(sort: "email", direction: sort_direction) do %>
+            <%= th_sort("Contact Email", "email", default_sort) %>
+          <% end %>
+        </th>
+        <th>
+          <%= link_to admin_users_path(sort: "entity_type", direction: sort_direction) do %>
+            <%= th_sort("Entity Type", "entity_type", default_sort) %>
+          <% end %>
+        </th>
+        <th>
+          <%= link_to admin_users_path(sort: "stripe_customer_id", direction: sort_direction) do %>
+            <%= th_sort("Customer ID", "stripe_customer_id", default_sort) %>
+          <% end %>
+        </th>
+        <th>
+          <%= link_to admin_users_path(sort: "stripe_account_id", direction: sort_direction) do %>
+            <%= th_sort("Account ID", "stripe_account_id", default_sort) %>
+          <% end %>
+        </th>
+        <th>
+          <%= link_to admin_users_path(sort: "stripe_verification_status", direction: sort_direction) do %>
+            <%= th_sort("Verification Stats", "stripe_verification_status", default_sort) %>
+          <% end %>
+        </th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <th><%= link_to entity_name(user), admin_user_path(user) %></th>
+          <th><%= link_to user.email, admin_user_path(user) %></th>
+          <td><%= user.entity_type.capitalize %></td>
+          <th><%= link_to user.stripe_customer_id, stripe_customer_path(user) %></th>
+          <th>
+            <% if user.has_stripe_account? %>
+              <%= link_to user.stripe_account_id, stripe_account_path(user) %></th>
+            <% else %>
+              n/a
+            <% end %>
+          <th>
+            <% if user.has_stripe_account? %>
+              <%= user.stripe_verification_status %>
+            <% else %>
+              n/a
+            <% end %>
+          </th>
+          <th><%= link_to "View Profile", user_path(user), class: "btn btn-default btn-xs" %></th>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+

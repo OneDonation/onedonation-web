@@ -50,13 +50,13 @@ namespace :db do
           }
         ]
         user_attributes = {
-          entity_type:       0,
+          entity_type:       1,
           prefix:            Faker::Name.prefix,
           first_name:        first_name,
           middle_name:       ('a'..'z').to_a.shuffle[0,1].join,
           last_name:         last_name,
           suffix:            Faker::Name.suffix,
-          username:          "#{first_name}#{last_name}",
+          username:          "#{first_name}#{last_name}".downcase,
           age:               [20,18,21,22,30,32,29,26,34,28,26,32,47].sample,
           gender:            ["male", "female"].sample,
           email:             "user#{count+1}@email.com",
@@ -74,8 +74,8 @@ namespace :db do
         }
 
         if count == 2
-          user_attributes.merge(
-            entity_type:            1,
+          user_attributes = user_attributes.merge(
+            entity_type:            2,
             business_name:          Faker::Company.name,
             business_url:           Faker::Internet.url,
             business_tax_id:        Faker::Company.ein,
@@ -119,6 +119,45 @@ namespace :db do
         print "."; STDOUT.flush
       end
 
+      5.times do |count|
+        first_name = Faker::Name.first_name
+        last_name = Faker::Name.last_name
+        user_attributes = {
+          entity_type:       0,
+          prefix:            Faker::Name.prefix,
+          first_name:        first_name,
+          middle_name:       ('a'..'z').to_a.shuffle[0,1].join,
+          last_name:         last_name,
+          suffix:            Faker::Name.suffix,
+          username:          "#{first_name}#{last_name}".downcase,
+          age:               [20,18,21,22,30,32,29,26,34,28,26,32,47].sample,
+          gender:            ["male", "female"].sample,
+          email:             "donor#{count+1}@email.com",
+          password:          "password"
+        }
+
+        user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"
+        remote_ip = "64.237.80.53"
+
+        user = User.new(user_attributes)
+        user.skip_confirmation!
+        user.save!
+        user.create_stripe_customer(remote_ip)
+        customer = Stripe::Customer.retrieve(user.stripe_customer_id)
+        card = customer.sources.create(
+          source: {
+            object: "card",
+            number: [4242424242424242,5555555555554444].sample,
+            exp_month: 05,
+            exp_year: 18,
+            cvc: [234,857,239],
+            name: "#{first_name} #{last_name}"
+          }
+        )
+        user.update(stripe_default_source: card.id)
+        print "."; STDOUT.flush
+      end
+
       print " (#{User.count})"; STDOUT.flush
     end
 
@@ -126,7 +165,7 @@ namespace :db do
     task funds: :environment do
       Fund.delete_all
       puts "\nPopulating Funds:"
-      User.all.each do |user|
+      User.non_donors.each do |user|
         2.times do
           name =    Faker::Company.name
 
@@ -154,7 +193,7 @@ namespace :db do
           goal:                  10000000
         )
         # Group fund members
-        User.where.not(id: group_fund.owner.id).first(2).each do |member|
+        User.where.not(id: group_fund.owner.id).where.not(entity_type: 0).first(2).each do |member|
           group_fund.members << member
         end
 
@@ -167,17 +206,21 @@ namespace :db do
       Donation.delete_all
       puts "\nPopulating Donations:"
       Fund.personal.each do |fund|
-        owner      = fund.owner
+        owner     = fund.owner
         donors    = User.where.not(id: owner.id)
 
         5.times do
           donor     = donors.sample
-          account  = Stripe::Account.retrieve(donor.stripe_account_id)
+          currency  = if donor.stripe_account_id.present?
+                        Stripe::Account.retrieve(donor.stripe_account_id).currencies_supported.first
+                      else
+                        "USD"
+                      end
           amount    = [1000, 500, 2000, 50000, 100000, 1000, 10000, 100000].sample
-          fee       = ((10000*0.059)+30).to_i
+          fee       = ((amount*0.059)+30).to_i
           stripe_donation = Stripe::Charge.create(
             amount: amount,
-            currency: account.currencies_supported.first,
+            currency: currency,
             customer: donor.stripe_customer_id,
             source: donor.stripe_default_source,
             description: "Donation to #{owner.name("human")}",
@@ -217,16 +260,20 @@ namespace :db do
       end
       Fund.group_fund.each do |fund|
         owner     = fund.owner
-        donors    = User.where.not(id: owner.id)
+        donors    = User.where.not(id: owner.id).where.not(id: fund.members.pluck(:id))
 
-        5.times do
+        10.times do
           donor     = donors.sample
-          account  = Stripe::Account.retrieve(donor.stripe_account_id)
+          currency  = if donor.stripe_account_id.present?
+                        Stripe::Account.retrieve(donor.stripe_account_id).currencies_supported.first
+                      else
+                        "USD"
+                      end
           amount    = [1000, 500, 2000, 50000, 100000, 1000, 10000, 100000].sample
-          fee       = ((10000*0.059)+30).to_i
+          fee       = ((amount*0.059)+30).to_i
           stripe_donation = Stripe::Charge.create(
             amount: amount,
-            currency: account.currencies_supported.first,
+            currency: currency,
             customer: donor.stripe_customer_id,
             source: donor.stripe_default_source,
             description: "Donation to #{owner.name("human")}",
