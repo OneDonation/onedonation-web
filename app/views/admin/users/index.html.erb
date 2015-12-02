@@ -15,8 +15,8 @@
           <% end %>
         </th>
         <th>
-          <%= link_to admin_users_path(sort: "entity_type", direction: sort_direction) do %>
-            <%= th_sort("Entity Type", "entity_type", default_sort) %>
+          <%= link_to admin_users_path(sort: "account_type", direction: sort_direction) do %>
+            <%= th_sort("Entity Type", "account_type", default_sort) %>
           <% end %>
         </th>
         <th>
@@ -42,7 +42,7 @@
         <tr>
           <th><%= link_to entity_name(user), admin_user_path(user) %></th>
           <th><%= link_to user.email, admin_user_path(user) %></th>
-          <td><%= user.entity_type.capitalize %></td>
+          <td><%= user.account_type.capitalize %></td>
           <th><%= link_to user.stripe_customer_id, stripe_customer_path(user) %></th>
           <th>
             <% if user.has_stripe_account? %>

@@ -4,11 +4,12 @@
     <title>Donations.io</title>
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag 'https://js.stripe.com/v2/', 'data-turbolinks-track' => true  %>
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="http://basehold.it/24"> -->
 
     <%= csrf_meta_tags %>
+    <%= tag :meta, name: "stripe-public-key", content: Rails.application.secrets.stripe_public_key %>
     <meta name = "viewport" content = "width=device-width,initial-scale=1.0">
   </head>
   <body>

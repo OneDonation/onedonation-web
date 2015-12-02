@@ -28,4 +28,8 @@ module Admin::AdminHelper
   def user_page?
     controller_name == "users"
   end
+
+  def donation_page?
+    controller_name == "donations"
+  end
 end

@@ -31,10 +31,9 @@ module Stripeable
           },
           default_currency: payout_currency,
           email: email,
-          country: entity_type == "company" ? business_country : user_country,
+          country: account_type == "company" ? business_country : user_country,
           transfer_schedule: {
-            delay_days: 7,
-            interval: "daily"
+            interval: "manual"
           },
           tos_acceptance: {
             date: DateTime.now.to_i,
@@ -70,7 +69,7 @@ module Stripeable
           }
         }
 
-        if entity_type == "company"
+        if account_type == "company"
           account_details.merge(
             legal_entity: {
               type: "company",
@@ -128,7 +127,7 @@ module Stripeable
         stripe_account[:legal_entity][:personal_address][:country]      = user_country
         stripe_account[:tos_acceptance][:date]                          = DateTime.now.to_i
         stripe_account[:tos_acceptance][:ip]                            = request.remote_ip
-        if entity_type == "company"
+        if account_type == "company"
           stripe_account[:legal_entity][:business_name]                   = business_name
           stripe_account[:legal_entity][:business_url]                    = business_url
           stripe_account[:legal_entity][:business_tax_id]                 = business_tax_id
@@ -155,7 +154,7 @@ module Stripeable
 
 
     def payout_currency
-      base_country = entity_type == "company" ? business_country : user_country
+      base_country = account_type == "company" ? business_country : user_country
       case base_country
       when "US"
         "USD"

@@ -1,81 +1,11 @@
 class DonationsController < ApplicationController
   before_action :set_donation, only: [:show, :edit, :update, :destroy]
+  before_action :set_fund, only: [:create]
+  before_action :set_recipient, only: [:create]
+
   helper_method :sort, :direction
 
-
-  # GET /donations
-  def index
-    if params[:filter].present?
-      @donations = current_user.donations.includes(:fund, :donor)
-
-      if params[:name].present?
-        name = params[:name].split
-        @donations = @donations.where("lower(users.first_name) LIKE ? OR lower(users.last_name) LIKE ?", name[0].downcase, name[1].present? ? name[1].downcase : name[0].downcase)
-      end
-
-      if params[:email].present?
-        @donations = @donations.where("lower(users.email) LIKE ?", params[:email].downcase)
-      end
-
-      if params[:fund].present?
-        if params[:fund] == "incoming"
-          @donations = @donations.where(funds: {uid: current_user.funds.collect{|f| f.uid}})
-        elsif params[:fund] == "outgoing"
-          @donations = @donations.where(funds: {uid: current_user.donated_funds.collect{|f| f.uid}})
-        else
-          @donations = @donations.where(funds: {uid: params[:fund]})
-        end
-      end
-
-      if params[:amount].present?
-        if params[:amount].match(/\.\./)
-          amounts = params[:amount].split('..')
-          final_amounts = Array.new
-          amounts.each do |amount|
-            amount = amount.gsub('$', '')
-            final_amounts << Float(amount)*100
-          end
-          @donations = @donations.where(amount: final_amounts[0]..final_amounts[1])
-        else
-          amount = params[:amount].gsub('$', '')
-          amount = Float(amount)*100
-          @donations = @donations.where(amount: amount)
-        end
-      end
-
-      if params[:status].present?
-        case params[:status]
-        when "cleared"
-          @donations = @donations.cleared
-        when "refunded"
-          @donations = @donations.refunded
-        end
-      end
-
-      if params[:date].present?
-        dates = params[:date].split("-")
-        start_date = Chronic.parse(dates[0])
-        end_date = Chronic.parse(dates[1])
-        @donations = @donations.where(created_at: start_date..end_date)
-      end
-      @donations = @donations.order(sort+ " " +direction).page(params[:page]).per(params[:per])
-    else
-      @donations = current_user.donations.includes(:fund, :donor).order(sort+ " " +direction).page(params[:page]).per(params[:per])
-    end
-
-
-    # if params[:fund].present?
-    #   case params[:fund]
-    #   when "all"
-    #     @donations = Donation.includes(:fund, :donor).received_donations(current_user.funds.collect{|f| f.id }).order(sort+ " " +direction).page(params[:page]).per(params[:per])
-    #   else
-    #     @donations = current_user.funds.find_by(slug: params[:fund]).donations.includes(:fund, :donor).order(sort+ " " +direction).page(params[:page]).per(params[:per])
-    #   end
-    # else
-    #   @donations = current_user.donations.includes(:fund, :donor).order(sort+ " " +direction).page(params[:page]).per(params[:per])
-    # end
-    add_breadcrumb "Donations", donations_path()
-  end
+  ZERO_DECIMAL_CURRENCIES = %w{BIF CLP DJF GNF JPY KMF KRW MGA PYG RWF VND VUV XAF XOF XPF}
 
   # GET /donations/:id
   def show
@@ -92,12 +22,44 @@ class DonationsController < ApplicationController
 
   # POST /donations
   def create
-    @donation = Donation.new(donation_params)
-
-    if @donation.save
-      redirect_to @donation, notice: 'Donation was successfully created.'
+    if valid_captcha_response?
+      logger.debug 'valid response'
+      initialize_donation
+      set_charge_attributes
+      begin
+        @stripe_charge = Stripe::Charge.create(@charge_attributes)
+        if @stripe_charge.status == "succeeded"
+          logger.debug "Charge succeeded"
+          @donation.set_stripe_data_and_save(@stripe_charge, @fees, params)
+          logger.debug @donation.errors.full_messages
+          # TODO: Redirect to Thank you page
+          redirect_to donations_path(@donation), notice: "Donation successful..."
+        else
+          logger.debug "charge failed"
+          # TODO: What to do if the donation doesn't save in our db?
+          # Redirect to charge cleanup page
+           redirect_to user_fund_path(@donation.recipient, @donation.fund), alert: "Stripe charge failed."
+        end
+      rescue Stripe::CardError => e
+        logger.debug "Error creating charge due to: #{e.param} #{e.code}"
+        parameter = e.param || "charge"
+        logger.debug "Charge attributes: #{@charge_attributes.inspect}"
+        @donation.errors.add(parameter, e.message)
+        logger.debug @donation.errors.inspect
+      rescue Stripe::RateLimitError => e
+        logger.debug "Stripe Rate limit"
+        logger.debug e.code
+        logger.debug e.param
+        logger.debug e.message
+      rescue *[Stripe::AuthenticationError, Stripe::APIConnectionError, Stripe::APIError] => e
+        logger.debug "Stripe API Error"
+        logger.debug e.code
+        logger.debug e.param
+        logger.debug e.message
+      end
     else
-      render :new
+      logger.debug "invalid captcha"
+      # TODO: Redirect or do something when the donation fails
     end
   end
 
@@ -116,10 +78,28 @@ class DonationsController < ApplicationController
     redirect_to donations_url, notice: 'Donation was successfully destroyed.'
   end
 
+
+  def verify_captcha
+    response = HTTParty.get("https://www.google.com/recaptcha/api/siteverify?secret=#{Rails.application.secrets.captcha_secret}&response=#{params[:captcha_token]}")
+    if response.parsed_response["success"]
+      render json: { status: "success", response: response.parsed_response }, status: :ok
+    else
+      render json: { status: "failed", response: response.parsed_response }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_donation
     @donation = Donation.find(params[:id])
+  end
+
+  def set_fund
+    @fund = Fund.find(params[:fund_id])
+  end
+
+  def set_recipient
+    @recipient = @fund.owner
   end
 
   def donation_params
@@ -155,28 +135,92 @@ class DonationsController < ApplicationController
     )
   end
 
-  def sort
-    if params[:sort].present?
-      case params[:sort]
-      when "Email"
-        "users.email"
-      when "Name"
-        "users.first_name"
-      when "Fund"
-        "funds.name"
-      else
-        Donation.column_names.include?(params[:sort].downcase) ? params[:sort].downcase : "donations.created_at"
-      end
+  def set_charge_attributes
+    # Set Card Token
+    set_card_token
+    # Set amount_in_cents and fees
+    set_amount_and_fees(@fund.currency)
+    @charge_attributes = {
+      currency:         @fund.currency,
+      amount:           @fees[:amount_in_cents],
+      application_fee:  @fees[:application_fee_in_cents],
+      source:           @card_token,
+      description:      "Donation to #{@recipient.name("human")} - #{@fund.name}",
+      destination:      @recipient.stripe_account_id,
+      expand:           ['balance_transaction']
+    }
+  end
+
+  # initialize a donation with or without a donor
+  def initialize_donation
+    if user_signed_in?
+      @donation = @fund.donations.new(
+                    recipient_id: @recipient.id,
+                    donor_id: current_user,
+                    stripe_customer_id: current_user.stripe_customer_id,
+                    remote_ip: request.remote_ip
+                  )
     else
-      "donations.created_at"
+      @donation = @fund.donation.new(recipient_id: @recipient.id)
     end
   end
 
-  def direction
-    if params[:direction].present? && %w[asc desc].include?(params[:direction])
-       params[:direction]
-    else
-      "asc"
+  # Create a new source on the existing customer if they chose to save this card.
+  # otherwise just grab stripe_token form params
+  def set_card_token
+    @card_token = if user_signed_in? && params[:save_card]
+                    begin
+                      @stripe_customer = Stripe::Customer.retrieve(current_user.stripe_customer_id)
+                      @stripe_customer.sources.create(
+                        source: params[:stripe_token]
+                      ).id
+                    rescue Stripe::APIError => e
+                      Rails.logger.debug "Error retrieving customer: current_user.stripe_customer_id"
+                      Rails.logger.debug e.inspect
+                    end
+                  else
+                    params[:stripe_token]
+                  end
+  end
+
+  def set_amount_and_fees(currency)
+    @fees = Hash.new
+    # Find base amount in cents in the charge currency
+    donation_amount = if ZERO_DECIMAL_CURRENCIES.include?(currency)
+                        params[:amount].to_i
+                      else
+                        params[:amount].to_i * 100
+                      end
+    @fees[:amount_in_cents] = Money.new(donation_amount, currency).cents
+    # Convert to USD
+    @fees[:amount_in_cents_usd] = if currency == "USD"
+                                    @fees[:amount_in_cents]
+                                  else
+                                    Money.new(@fees[:amount_in_cents], currency).exchange_to("USD").cents
+                                  end
+
+    # Set fee variables in USD
+    # Round up to ensure we don't rob ourselves of a cent.
+    @fees[:stripe_fee_in_cents_usd]      = ((@fees[:amount_in_cents_usd] * 0.029) + 30).round
+    @fees[:onedonation_fee_in_cents_usd] = (@fees[:amount_in_cents_usd] * 0.03).round
+    @fees[:application_fee_in_cents_usd] = (@fees[:stripe_fee_in_cents_usd] + @fees[:onedonation_fee_in_cents_usd])
+
+    # Set charge fees variable in relevant currency
+    if currency == "USD"
+      @fees[:stripe_fee_in_cents]      = @fees[:stripe_fee_in_cents_usd]
+      @fees[:onedonation_fee_in_cents] = @fees[:onedonation_fee_in_cents_usd]
+      @fees[:application_fee_in_cents] = @fees[:application_fee_in_cents_usd]
+    else # Non US currency apply exchange rates to determine fees.
+      @fees[:stripe_fee_in_cents]      = Money.new(@fees[:stripe_fee_in_cents_usd], "USD").exchange_to(currency).cents
+      @fees[:onedonation_fee_in_cents] = Money.new(@fees[:onedonation_fee_in_cents_usd], "USD").exchange_to(currency).cents
+      @fees[:application_fee_in_cents] = Money.new(@fees[:application_fee_in_cents_usd], "USD").exchange_to(currency).cents
     end
+  end
+
+
+  def valid_captcha_response?
+    md5 = Digest::MD5.new
+    md5.update(params["g-recaptcha-response"] + Rails.application.secrets.stripe_public_key)
+    params[:xlvm] == md5.to_s
   end
 end

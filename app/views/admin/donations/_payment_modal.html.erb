@@ -1,0 +1,64 @@
+<div class="modal fade payment-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Payment Overview</h4>
+      </div>
+      <div class="modal-body">
+        <% @payment.inspect %>
+        <h5>Payment Details</h5>
+        <div class="well">
+          <dl class="dl-horizontal">
+            <dt>Currency</dt><dd><%= @payment.currency.upcase %></dd>
+            <dt>Amount:</dt><dd><%= Money.new(@payment.amount, @payment.currency).format %></dd>
+            <dt>Stripe Fee:</dt>
+            <dd>
+              <%= Money.new(@payment.balance_transaction.fee, @payment.balance_transaction.currency).format %>
+              <%= content_tag :span, nil, class: "glyphicon glyphicon-info-sign", data: {
+                  toggle: "tooltip",
+                  title: "#{@payment.balance_transaction.fee_details.collect{|fee| "#{Money.new(fee["amount"], fee["currency"]).format} - #{fee["description"]}" }.join("<br>").html_safe }",
+                  trigger: "hover" } %>
+            </dd>
+            <dt>Platform Fee</dt><dd><%= Money.new(@payment.application_fee.amount-@payment.balance_transaction.fee, @payment.application_fee.currency).format %></dd>
+            <dt>Collected Fee:</dt>
+            <dd><%= Money.new(@payment.application_fee.amount, @payment.application_fee.currency).format %></dd>
+            <dt>Date:</dt><dd><%= l Time.at(@payment.created).to_datetime, format: :short %></dd>
+            <dt>Status:</dt><dd><%= @payment.status %></dd>
+            <dt>Destination:</dt><dd><%= @payment.destination %></dd>
+            <dt>Transfer:</dt><dd><%= @payment.transfer %></dd>
+            <dt>Description:</dt><dd><%= @payment.description %></dd>
+          </dl>
+        </div>
+
+        <h5>Card Details</h5>
+        <div class="well">
+          <dl class="dl-horizontal">
+            <dt>ID:</dt><dd><%= @payment.source.id %></dd>
+            <dt>Name:</dt><dd><%= @payment.source.name %></dd>
+            <dt>Address:</dt>
+            <dd>
+              <% if @payment.source.address_line1.present? %>
+                <%= "#{@payment.source.address_line1}\n#{@payent.source.address_line2}" %><br>
+                <%= "#{@payment.source.address_city}, #{@payent.source.address_state} #{@payment.source.address_zip} #{@payent.source.address_country}" %>
+              <% else %>
+                unknown
+              <% end %>
+            </dd>
+            <dt>Number:</dt><dd><%= @payment.source.last4 %></dd>
+            <dt>Expires:</dt><dd><%= "#{@payment.source.exp_month}/#{@payment.source.exp_year}" %></dd>
+            <dt>Type:</dt><dd><%= @payment.source.brand %></dd>
+            <dt>CVC Check:</dt><dd><%= @payment.source.cvc_check || "n/a" %></dd>
+            <dt>Address Check:</dt><dd><%= @payment.source.address_line1_check || "n/a" %></dd>
+            <dt>Zip Check:</dt><dd><%= @payment.source.address_zip_check || "n/a" %></dd>
+            <dt>Customer:</dt><dd><%= @payment.source.customer %></dd>
+
+          </dl>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

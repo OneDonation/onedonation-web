@@ -14,13 +14,13 @@
     <legend>Account Type</legend>
     <div class="form-group">
       <div class="radio">
-        <%= label_tag :entity_type, for: "entity_type_individual" do %>
-          <%= radio_button_tag :entity_type, :individual, selected: true %> Individual
+        <%= label_tag :account_type, for: "account_type_individual" do %>
+          <%= radio_button_tag :account_type, :individual, selected: true %> Individual
         <% end %>
       </div>
       <div class="radio">
-        <%= label_tag :entity_type, for: "entity_type_company" do %>
-          <%= radio_button_tag :entity_type, :company %> Company
+        <%= label_tag :account_type, for: "account_type_company" do %>
+          <%= radio_button_tag :account_type, :company %> Company
         <% end %>
       </div>
     </div>

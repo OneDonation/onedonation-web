@@ -190,7 +190,7 @@ class RegistrationsController < Devise::RegistrationsController
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(
-                                                 :entity_type,
+                                                 :account_type,
                                                  :country,
                                                  :email,
                                                  :password,
@@ -241,7 +241,7 @@ class RegistrationsController < Devise::RegistrationsController
                                                       :dob_year,
                                                       :country,
                                                       :timezone,
-                                                      :entity_type,
+                                                      :account_type,
                                                       :current,
                                                       :password,
                                                       :password_confirmation

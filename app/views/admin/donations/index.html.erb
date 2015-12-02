@@ -1,0 +1,58 @@
+<h1 class="page-header">Donations</h1>
+<strong>Total Donations</strong>: <%= Donation.all.count %><br>
+<strong>Total Charges</strong>: <%= Money.new(Donation.all.sum(:amount_in_cents_usd), "USD") %><br>
+<strong>OneDonation 5%</strong>: <%= Money.new(Donation.all.sum(:onedonation_fee_in_cents_usd), "USD") %><br>
+<strong>Stripe Profit</strong>: <%= Money.new(Donation.all.sum(:stripe_fee_in_cents_usd), "USD") %>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Recipient</th>
+      <th>Status</th>
+      <th>Amount</th>
+      <th>Fee</th>
+      <th>Received</th>
+      <th>IP Address</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @donations.each do |donation| %>
+      <tr>
+        <td>
+          <%= link_to donation.recipient.name("human"), admin_user_path(donation.recipient.username) %>
+          <br> <small><%= link_to donation.fund.name, admin_user_fund_path(donation.recipient, donation.fund) %></small>
+        </td>
+        <td><%= donation.state %></td>
+        <td>
+          <%= "#{Money.new(donation.amount_in_cents, donation.stripe_currency).format} #{donation.stripe_currency.upcase}" %>
+          <% if donation.stripe_currency != "usd" %>
+            <br><small class="text-muted"><%= "(#{Money.new(donation.amount_in_cents_usd, "USD").format} USD)" %></small>
+          <% end %>
+        </td>
+        <td>
+          <%= "#{Money.new(donation.aggregated_fee_in_cents, donation.stripe_currency).format} #{donation.stripe_currency.upcase}" %>
+          <% if donation.stripe_currency != "usd" %>
+            <br><small class="text-muted"><%= "(#{Money.new(donation.aggregated_fee_in_cents_usd, "USD").format} USD)" %></small>
+          <% end %>
+        </td>
+        <td>
+          <%= "#{Money.new((donation.amount_in_cents - donation.aggregated_fee_in_cents), donation.stripe_currency).format} #{donation.stripe_currency.upcase}" %>
+          <% if donation.stripe_currency != "usd" %>
+            <br><small class="text-muted"><%= "(#{Money.new((donation.amount_in_cents_usd - donation.aggregated_fee_in_cents_usd), "USD").format} USD)" %></small>
+          <% end %>
+        </td>
+        <td><%= donation.remote_ip %></td>
+        <td>
+          <div class="btn-toolbar pull-right">
+            <div class="btn-group">
+              <%= link_to "Details", view_payment_admin_donation_path(donation), class: "btn btn-default", remote: true %>
+            </div>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @donations %>

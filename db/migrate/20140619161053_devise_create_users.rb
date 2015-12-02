@@ -12,8 +12,10 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.jsonb   :stripe_legal_entity,  null: false, default: '{}'
       t.jsonb   :stripe_verification,  null: false, default: '{}'
       t.integer :stripe_verification_status
+      t.string  :stripe_currency
       t.string  :encrypted_stripe_secret_key
       t.string  :encrypted_stripe_publishable_key
+      t.integer :status, default: 0, null: false
       t.string  :prefix
       t.string  :first_name
       t.string  :middle_name
@@ -43,12 +45,8 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.string  :dob_month
       t.string  :dob_day
       t.string  :dob_year
-      t.string  :country
       t.string  :timezone
       t.integer :account_type, default: 0
-      t.boolean :current, default: false
-      t.integer :stripe_status
-
       ## Database authenticatable
       t.string :encrypted_password, null: false, default: ""
 
@@ -88,10 +86,15 @@ class DeviseCreateUsers < ActiveRecord::Migration
     add_index :users, :reset_password_token, unique: true
     add_index :users, :confirmation_token,   unique: true
     add_index :users, :unlock_token,         unique: true
-    add_index :users, :country
+    add_index :users, :user_country
+    add_index :users, :business_country
+    add_index :users, :account_type
+    add_index :users, :stripe_currency
     add_index :users, :stripe_account_id
     add_index :users, :stripe_tos_acceptance, using: :gin
     add_index :users, :stripe_legal_entity, using: :gin
     add_index :users, :stripe_verification, using: :gin
+    add_index :users, :stripe_verification_status
+    add_index :users, :status
   end
 end

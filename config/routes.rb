@@ -34,10 +34,15 @@ Rails.application.routes.draw do
 
       # Application Resources
       resources :admins
-      resources :donations
+      resources :donations do
+        member do
+          get :view_payment
+        end
+      end
       resources :fundraisers, controller: :funds
       resources :metadata
       resources :users, constraints: { username: /[0-9A-Za-z\.\-\_]+/ } do
+        resources :funds, path: "/", only: [:show]
         member do
           get '/:selected_tab' => 'users#show', as: :selected_tab, constraints: { selected_tab: /(?!edit|signup)([a-zA-Z\-]+)/ }
         end
@@ -80,7 +85,6 @@ Rails.application.routes.draw do
     patch  "/settings"             => "registrations#update"
   end
 
-
   ########################################################################
   # Public Routes
   ########################################################################
@@ -89,6 +93,11 @@ Rails.application.routes.draw do
   resources :donations
   resources :fundraisers, controller: :funds
   resources :metadata
-  resources :users
+
+  post '/verify/captcha' => 'donations#verify_captcha', as: :veryfiy_captcha
+
+  resources :users, constraints: { username: /[0-9A-Za-z\.\-\_]+/ }, path: '/' do
+    resources :funds, only: :show, path: '/'
+  end
 
 end

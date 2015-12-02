@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
 
   # Enums
   #########################
-  enum entity_type: {
+  enum account_type: {
     donor: 0,
     individual: 1,
     company: 2
@@ -79,7 +79,7 @@ class User < ActiveRecord::Base
 
   # Scopes
   #########################
-  scope :non_donors, -> { where.not(entity_type: 0) }
+  scope :non_donors, -> { where.not(account_type: 0) }
 
   # Validations
   #########################

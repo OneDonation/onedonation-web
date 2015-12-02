@@ -1,20 +1,23 @@
-<!--
-<div class="row">
-  <div class="col-md-12 col-sm-12 col-xs-12">
-    <div id="donations_panel" class="panel panel-default" style="height:300px;background:#4ec5d6;padding:15px 5px 0;">
-      <div id="donations" style="height:100%;width:100%"></div>
-    </div>
-  </div>
-</div> -->
-<%= form_tag "/donations", method: :get, remote: true do |f| %>
-  <%= hidden_field_tag :filter, true %>
-  <%= hidden_field_tag :sort, params[:sort] %>
-  <%= hidden_field_tag :direction, params[:direction] %>
-  <div id="donations" class="well">
-    <%= render "list_items", donations: @donations %>
-  </div>
-  <%= submit_tag nil, class: "hide" %>
-<% end %>
-<div class="pull-right">
-  <%= paginate @donations %>
-</div>
+<h1 class="page-header">Donations</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Recipient</th>
+      <th>Fund</th>
+      <th>Amount</th>
+      <th>Fees</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @donations.each do |donation| %>
+      <tr>
+        <td><%= donation.stripe_charge_id %></td>
+        <td><%= link_to donation.recipent.name, admin_user_path(donation.recipient) %></td>
+        <td><%= donation.fund.name %></td>
+        <td><%= donation.amount %></td>
+        <td><%= donation.inspect %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

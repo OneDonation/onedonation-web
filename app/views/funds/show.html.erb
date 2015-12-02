@@ -1,0 +1,106 @@
+<h1><%= @user.name("human") %> - <%= @fund.name %></h1>
+<%= form_for @donation, html: { id: "donation-form" } do |f| %>
+  <%= hidden_field_tag :fund_id, @fund.id %>
+  <%= hidden_field_tag :xlvm %>
+
+  <div class="field">
+    <%= label_tag :amount %><br>
+    <%= text_field_tag :amount, 100 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :message %><br>
+    <%= f.text_area :message %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :first_name %><br>
+    <%= text_field_tag :first_name, current_user.first_name %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :last_name %><br>
+    <%= text_field_tag :last_name, current_user.last_name %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :email %><br>
+    <%= text_field_tag :email, current_user.email %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :line1, "Address" %><br>
+    <%= text_field_tag :line1, "1234 acme ln" %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :line2, "Apt/Ste #" %><br>
+    <%= text_field_tag :line2, "3" %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :city %><br>
+    <%= text_field_tag :city, "Redlands" %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :state, "State" %><br>
+    <%= text_field_tag :state, "Ca" %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :postal_code, "Postal Code" %><br>
+    <%= text_field_tag :postal_code, "92374" %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :card_number, "Credit Card Number" %><br>
+    <%= text_field_tag :card_number, 4000000000000077, name: nil %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :card_code, "Security Code on Card (CVV)" %><br>
+    <%= text_field_tag :card_code, 398, name: nil %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :card_month, "Card Expiration" %><br>
+    <%= select_month 1, { add_month_numbers: true }, { name: nil, id: "card_month"} %>
+    <%= select_year 2017, { start_year: Date.today.year, end_year: Date.today.year+15 }, { name: nil, id: "card_year" } %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :save_card, "save this card" %><br>
+    <%= check_box_tag :save_card %>
+  </div>
+
+
+  <!-- Google Captcha -->
+  <div id="custom-recaptcha"></div>
+  <script type="text/javascript">
+    var verifyCaptcha = function(response) {
+      $.post('/verify/captcha', { 'captcha_token': response }, function(verifyResponse){
+        console.log(verifyResponse)
+        console.log(verifyResponse.status)
+        if (verifyResponse.status == "failure") {
+          $('#donation-form input[type="submit"]').attr('disabled', true)
+        } else if (verifyResponse.status == "success") {
+          $('#donation-form input[type="submit"]').attr('disabled', false)
+          $('#xlvm').val(md5($('#g-recaptcha-response').val() + $('meta[name="stripe-public-key"]').attr('content')))
+          console.log($('#xlvm').val())
+        }
+      });
+    };
+    var renderCaptcha = function() {
+      grecaptcha.render('custom-recaptcha', {
+        'sitekey': '6LddgxETAAAAAI9nl1-YqV56dxpoQi3K5rTF7dKT',
+        'callback': verifyCaptcha
+      });
+    };
+  </script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=renderCaptcha&render=explicit" async defer></script>
+
+  <%= f.submit disabled: true %>
+<% end %>
+
+

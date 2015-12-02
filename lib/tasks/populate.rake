@@ -50,7 +50,7 @@ namespace :db do
           }
         ]
         user_attributes = {
-          entity_type:       1,
+          account_type:       1,
           prefix:            Faker::Name.prefix,
           first_name:        first_name,
           middle_name:       ('a'..'z').to_a.shuffle[0,1].join,
@@ -75,7 +75,7 @@ namespace :db do
 
         if count == 2
           user_attributes = user_attributes.merge(
-            entity_type:            2,
+            account_type:            2,
             business_name:          Faker::Company.name,
             business_url:           Faker::Internet.url,
             business_tax_id:        Faker::Company.ein,
@@ -93,6 +93,7 @@ namespace :db do
         remote_ip = "64.237.80.53"
 
         user = User.new(user_attributes)
+        user.stripe_currency = user.payout_currency
         user.skip_confirmation!
         user.save!
         user.create_stripe_customer(remote_ip)
@@ -102,17 +103,17 @@ namespace :db do
         card = customer.sources.create(
           source: {
             object: "card",
-            address_line1: addresses[count][:line1],
-            address_line2: addresses[count][:line2],
-            address_city: addresses[count][:city],
-            address_state: addresses[count][:state],
-            address_zip: addresses[count][:postal_code],
-            address_country: addresses[count][:country],
             number: [4242424242424242,5555555555554444].sample,
             exp_month: 03,
             exp_year: 18,
             cvc: [234,857,239],
-            name: "#{first_name} #{last_name}"
+            name: "#{user.first_name} #{user.last_name}",
+            address_line1: user.user_line1,
+            address_line2: user.user_line2,
+            address_city: user.user_city,
+            address_state: user.user_state,
+            address_zip: user.user_postal_code,
+            address_country: user.user_country
           }
         )
         user.update(stripe_default_source: card.id)
@@ -123,7 +124,7 @@ namespace :db do
         first_name = Faker::Name.first_name
         last_name = Faker::Name.last_name
         user_attributes = {
-          entity_type:       0,
+          account_type:       0,
           prefix:            Faker::Name.prefix,
           first_name:        first_name,
           middle_name:       ('a'..'z').to_a.shuffle[0,1].join,
@@ -148,10 +149,10 @@ namespace :db do
           source: {
             object: "card",
             number: [4242424242424242,5555555555554444].sample,
-            exp_month: 05,
+            exp_month: 03,
             exp_year: 18,
             cvc: [234,857,239],
-            name: "#{first_name} #{last_name}"
+            name: "#{user.first_name} #{user.last_name}"
           }
         )
         user.update(stripe_default_source: card.id)
@@ -167,33 +168,33 @@ namespace :db do
       puts "\nPopulating Funds:"
       User.non_donors.each do |user|
         2.times do
-          name =    Faker::Company.name
+          name = Faker::Company.name
 
           fund = user.funds.create!(
-            name:                  name,
-            category:              [0,1,2,3,4].sample,
-            description:           Faker::Lorem.sentence([10,8,4].sample),
-            ends_at:               Date.today + 30.days,
-            url:                   name.parameterize,
-            statement_descriptor:  name.parameterize,
-            goal:                  10000000
+            name:                         name,
+            category:                     [0,1,2,3,4].sample,
+            description:                  Faker::Lorem.sentence([10,8,4].sample),
+            ends_at:                      Date.today + 30.days,
+            url:                          name.parameterize,
+            custom_statement_descriptor:  name.parameterize,
+            goal:                         10000000
           )
         end
 
         # Create a group fund and it's members.
         group_fund_name = Faker::Company.name
         group_fund = user.funds.create!(
-          group_fund:            true,
-          name:                  group_fund_name,
-          category:              [0,1,2,3,4].sample,
-          description:           Faker::Lorem.sentence([10,8,4].sample),
-          ends_at:               Date.today + 30.days,
-          url:                   group_fund_name.parameterize,
-          statement_descriptor:  group_fund_name.parameterize,
-          goal:                  10000000
+          group_fund:                   true,
+          name:                         group_fund_name,
+          category:                     [0,1,2,3,4].sample,
+          description:                  Faker::Lorem.sentence([10,8,4].sample),
+          ends_at:                      Date.today + 30.days,
+          url:                          group_fund_name.parameterize,
+          custom_statement_descriptor:  group_fund_name.parameterize,
+          goal:                         10000000
         )
         # Group fund members
-        User.where.not(id: group_fund.owner.id).where.not(entity_type: 0).first(2).each do |member|
+        User.where.not(id: group_fund.owner.id).where.not(account_type: 0).first(2).each do |member|
           group_fund.members << member
         end
 
@@ -209,35 +210,71 @@ namespace :db do
         owner     = fund.owner
         donors    = User.where.not(id: owner.id)
 
-        5.times do
+        20.times do
           donor     = donors.sample
-          currency  = if donor.stripe_account_id.present?
-                        Stripe::Account.retrieve(donor.stripe_account_id).currencies_supported.first
-                      else
-                        "USD"
-                      end
-          amount    = [1000, 500, 2000, 50000, 100000, 1000, 10000, 100000].sample
-          fee       = ((amount*0.059)+30).to_i
+          currency  = owner.stripe_currency
+          amount    = [100, 5, 200, 500, 1000, 10, 100, 100, 20, 15, 10, 5, 5].sample
+          if currency == "USD"
+            # Convert amount to cents
+            amount_in_cents = amount * 100
+            amount_in_cents_usd = amount_in_cents
+            # find application fee in cents usd
+            stripe_fee_in_cents_usd = (amount_in_cents_usd * 0.029) + 30
+            od_fee_in_cents_usd = amount_in_cents_usd * 0.05
+            application_fee_in_cents_usd = (stripe_fee_in_cents_usd + od_fee_in_cents_usd).to_i
+            # convert back to starting currency
+            stripe_fee_in_cents = stripe_fee_in_cents_usd
+            od_fee_in_cents = od_fee_in_cents_usd
+            application_fee_in_cents = application_fee_in_cents_usd
+
+            puts "charge is #{Money.new(amount_in_cents, "USD").format} in #{currency} (#{Money.new(amount_in_cents_usd, "USD").format} USD)"
+            puts "application fee: #{Money.new(application_fee_in_cents, "USD").format} USD"
+          else
+            # Non US currency apply exchange rates to determine fees.
+            # Convert amount to cents
+            amount_in_cents = amount * 100
+            # convert cents to cents in USD
+            amount_in_cents_usd = Money.new(amount_in_cents, currency).exchange_to("USD").cents
+            # find application fee in cents usd
+            stripe_fee_in_cents_usd = (amount_in_cents_usd * 0.029) + 30
+            od_fee_in_cents_usd = amount_in_cents_usd * 0.05
+            application_fee_in_cents_usd = (stripe_fee_in_cents_usd + od_fee_in_cents_usd).to_i
+            # convert back to starting currency
+            stripe_fee_in_cents = Money.new(stripe_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            od_fee_in_cents = Money.new(od_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            application_fee_in_cents = Money.new(application_fee_in_cents_usd, "USD").exchange_to(currency).cents
+
+            puts "charge is #{Money.new(amount_in_cents, currency).format} in #{currency} (#{Money.new(amount_in_cents_usd, "USD").format} USD)"
+            puts "application fee: #{Money.new(application_fee_in_cents, currency).format} in #{currency} (#{Money.new(application_fee_in_cents_usd, "USD").format} USD)"
+          end
           stripe_donation = Stripe::Charge.create(
-            amount: amount,
+            amount: amount_in_cents,
             currency: currency,
             customer: donor.stripe_customer_id,
             source: donor.stripe_default_source,
             description: "Donation to #{owner.name("human")}",
-            application_fee: fee,
-            destination: owner.stripe_account_id
+            application_fee: application_fee_in_cents,
+            destination: owner.stripe_account_id,
+            expand:  ['balance_transaction']
           )
           donation = fund.donations.create!(
             recipient_id:                 owner.id,
             donor_id:                     donor.id,
+            amount_in_cents:              amount_in_cents,
+            stripe_fee_in_cents:          stripe_fee_in_cents,
+            onedonation_fee_in_cents:     od_fee_in_cents,
+            aggregated_fee_in_cents:      application_fee_in_cents,
+            amount_in_cents_usd:          amount_in_cents_usd,
+            stripe_fee_in_cents_usd:      stripe_fee_in_cents_usd,
+            onedonation_fee_in_cents_usd: od_fee_in_cents_usd,
+            aggregated_fee_in_cents_usd:  application_fee_in_cents_usd,
             stripe_customer_id:           stripe_donation.customer,
             stripe_charge_id:             stripe_donation.id,
             stripe_source_id:             stripe_donation.source.id,
             stripe_destination:           stripe_donation.destination,
-            stripe_amount:                stripe_donation.amount,
             stripe_amount_refunded:       stripe_donation.amount_refunded,
-            stripe_application_fee:       stripe_donation.application_fee,
-            stripe_balance_transaction:   stripe_donation.balance_transaction,
+            stripe_application_fee_id:    stripe_donation.application_fee,
+            stripe_balance_transaction:   stripe_donation.balance_transaction.to_json,
             stripe_captured:              stripe_donation.captured,
             stripe_created:               stripe_donation.created,
             stripe_currency:              stripe_donation.currency,
@@ -264,34 +301,70 @@ namespace :db do
 
         10.times do
           donor     = donors.sample
-          currency  = if donor.stripe_account_id.present?
-                        Stripe::Account.retrieve(donor.stripe_account_id).currencies_supported.first
-                      else
-                        "USD"
-                      end
-          amount    = [1000, 500, 2000, 50000, 100000, 1000, 10000, 100000].sample
-          fee       = ((amount*0.059)+30).to_i
+          currency  = owner.stripe_currency
+          amount    = [100, 5, 200, 500, 1000, 10, 100, 100, 20, 15, 10, 5, 5].sample
+          if currency == "USD"
+            # Convert amount to cents
+            amount_in_cents = amount * 100
+            amount_in_cents_usd = amount_in_cents
+            # find application fee in cents usd
+            stripe_fee_in_cents_usd = (amount_in_cents_usd * 0.029) + 30
+            od_fee_in_cents_usd = amount_in_cents_usd * 0.05
+            application_fee_in_cents_usd = (stripe_fee_in_cents_usd + od_fee_in_cents_usd).to_i
+            # convert back to starting currency
+            stripe_fee_in_cents = stripe_fee_in_cents_usd
+            od_fee_in_cents = od_fee_in_cents_usd
+            application_fee_in_cents = application_fee_in_cents_usd
+
+            puts "charge is #{Money.new(amount_in_cents, "USD").format} in #{currency} (#{Money.new(amount_in_cents_usd, "USD").format} USD)"
+            puts "application fee: #{Money.new(application_fee_in_cents, "USD").format} USD"
+          else
+            # Non US currency apply exchange rates to determine fees.
+            # Convert amount to cents
+            amount_in_cents = amount * 100
+            # convert cents to cents in USD
+            amount_in_cents_usd = Money.new(amount_in_cents, currency).exchange_to("USD").cents
+            # find application fee in cents usd
+            stripe_fee_in_cents_usd = (amount_in_cents_usd * 0.029) + 30
+            od_fee_in_cents_usd = amount_in_cents_usd * 0.05
+            application_fee_in_cents_usd = (stripe_fee_in_cents_usd + od_fee_in_cents_usd).to_i
+            # convert back to starting currency
+            stripe_fee_in_cents = Money.new(stripe_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            od_fee_in_cents = Money.new(od_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            application_fee_in_cents = Money.new(application_fee_in_cents_usd, "USD").exchange_to(currency).cents
+
+            puts "charge is #{Money.new(amount_in_cents, currency).format} in #{currency} (#{Money.new(amount_in_cents_usd, "USD").format} USD)"
+            puts "application fee: #{Money.new(application_fee_in_cents, currency).format} in #{currency} (#{Money.new(application_fee_in_cents_usd, "USD").format} USD)"
+          end
           stripe_donation = Stripe::Charge.create(
-            amount: amount,
+            amount: amount_in_cents,
             currency: currency,
             customer: donor.stripe_customer_id,
             source: donor.stripe_default_source,
             description: "Donation to #{owner.name("human")}",
-            application_fee: fee,
-            destination: owner.stripe_account_id
+            application_fee: application_fee_in_cents,
+            destination: owner.stripe_account_id,
+            expand:  ['balance_transaction']
           )
           donation = fund.donations.create!(
             recipient_id:                 owner.id,
             donor_id:                     donor.id,
             designated_to:                fund.members.sample.id,
+            amount_in_cents:              amount_in_cents,
+            stripe_fee_in_cents:          stripe_fee_in_cents,
+            onedonation_fee_in_cents:     od_fee_in_cents,
+            aggregated_fee_in_cents:      application_fee_in_cents,
+            amount_in_cents_usd:          amount_in_cents_usd,
+            stripe_fee_in_cents_usd:      stripe_fee_in_cents_usd,
+            onedonation_fee_in_cents_usd: od_fee_in_cents_usd,
+            aggregated_fee_in_cents_usd:  application_fee_in_cents_usd,
             stripe_customer_id:           stripe_donation.customer,
             stripe_charge_id:             stripe_donation.id,
             stripe_source_id:             stripe_donation.source.id,
             stripe_destination:           stripe_donation.destination,
-            stripe_amount:                stripe_donation.amount,
             stripe_amount_refunded:       stripe_donation.amount_refunded,
-            stripe_application_fee:       stripe_donation.application_fee,
-            stripe_balance_transaction:   stripe_donation.balance_transaction,
+            stripe_application_fee_id:    stripe_donation.application_fee,
+            stripe_balance_transaction:   stripe_donation.balance_transaction.to_json,
             stripe_captured:              stripe_donation.captured,
             stripe_created:               stripe_donation.created,
             stripe_currency:              stripe_donation.currency,

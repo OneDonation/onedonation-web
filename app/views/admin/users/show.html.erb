@@ -14,6 +14,7 @@
       <div class="panel-body">
         <% if @user.company? %>
           <dl class="minimal">
+            <dt>Username</dt><dd><%= @user.username %></dd>
             <dt>Name</dt><dd><%= @user.business_name %></dd>
             <dt>Business EIN</dt><dd><%= @user.business_tax_id %></dd>
             <dt>Business VAT</dt><dd><%= @user.business_vat_id || "n/a" %></dd>
@@ -23,7 +24,9 @@
           <legend>Business Contact Details</legend>
         <% end %>
         <dl class="minimal">
-          <dt>Username</dt><dd><%= @user.username %></dd>
+          <% unless @user.company? %>
+            <dt>Username</dt><dd><%= @user.username %></dd>
+          <% end %>
           <dt>Name</dt><dd><%= @user.name("human") %></dd>
           <dt>Email</dt><dd><%= @user.email %></dd>
           <dt>Address</dt>
@@ -49,7 +52,7 @@
       </div>
       <div class="panel-body">
         <dl class="minimal">
-          <dt>Account Type</dt><dd><%= @user.entity_type.capitalize %></dd>
+          <dt>Account Type</dt><dd><%= @user.account_type.capitalize %></dd>
           <dt>Account Status</dt><dd><%= @user.stripe_verification_status %></dd>
           <% if @user.stripe_verification["disabled_reason"].present? %>
             <dt>Disabled Reason</dt><dd><%= @user.stripe_verification["disabled_reason"] %></dd>

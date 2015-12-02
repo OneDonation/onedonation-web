@@ -1,4 +1,5 @@
 class FundsController < ApplicationController
+  before_action :set_user, only: :show
   before_action :set_fund, only: [:show, :edit, :update, :destroy]
 
   # GET /funds
@@ -7,8 +8,9 @@ class FundsController < ApplicationController
     add_breadcrumb "Fundraisers"
   end
 
-  # GET /funds/:id
+  # GET /:username/:id
   def show
+    @donation = Donation.new
   end
 
   # GET /funds/new
@@ -48,8 +50,12 @@ class FundsController < ApplicationController
 
   private
 
+  def set_user
+    @user = User.find_by(username: params[:user_id])
+  end
+
   def set_fund
-    @fund = Fund.find(params[:id])
+    @fund = Fund.find_by(url: params[:id])
   end
 
   def fund_params

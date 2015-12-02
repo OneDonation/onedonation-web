@@ -44,9 +44,17 @@ class Fund < ActiveRecord::Base
     family: 6,
     national_news: 7,
     newleyweds: 8,
-    other: 9,
-    travel: 10,
-    wish: 11
+    travel: 9,
+    wish: 10,
+    other: 11
+  }
+
+  enum status: {
+    pending: 0,
+    active: 1,
+    cancelled: 2,
+    complete: 3,
+    suspended: 4
   }
 
   # Relationships
@@ -69,6 +77,14 @@ class Fund < ActiveRecord::Base
 
   # Class Methods
   #########################
+
+  def to_param
+    url
+  end
+
+  def currency
+    owner.stripe_currency
+  end
 
   def raised
     Float(donations.sum(:amount))/100

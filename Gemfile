@@ -39,7 +39,11 @@ gem 'grape-jbuilder'
 # Charges
 gem 'stripe'
 gem 'stripe_event'
-gem 'money-rails'
+
+gem 'money-rails', '~> 1.4.1'
+# gem 'money-currencylayer-bank'
+
+gem 'currencylayer'
 
 # Geolacation
 gem 'geocoder'

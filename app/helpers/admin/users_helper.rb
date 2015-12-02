@@ -1,6 +1,6 @@
 module Admin::UsersHelper
   def entity_name(user)
-    case user.entity_type
+    case user.account_type
     when 'donor', 'individual'
       user.name('human')
     when 'company'
@@ -9,7 +9,7 @@ module Admin::UsersHelper
   end
 
   def entity_address(user)
-    case user.entity_type
+    case user.account_type
     when 'individual'
       "#{user.user_line1}<br>#{user.user_line2.present? ? "#{user.user_line2}<br>" : nil}#{user.user_city}, #{user.user_state} #{user.user_postal_code} #{user.user_country}".html_safe
     when 'company'

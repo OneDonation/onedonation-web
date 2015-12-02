@@ -90,14 +90,22 @@ CREATE TABLE donations (
     donor_id integer,
     fund_id integer,
     designated_to integer,
+    currency character varying(4),
+    amount_in_cents integer,
+    stripe_fee_in_cents integer,
+    onedonation_fee_in_cents integer,
+    aggregated_fee_in_cents integer,
+    amount_in_cents_usd integer,
+    stripe_fee_in_cents_usd integer,
+    onedonation_fee_in_cents_usd integer,
+    aggregated_fee_in_cents_usd integer,
     stripe_customer_id character varying,
     stripe_charge_id character varying,
     stripe_source_id character varying,
     stripe_destination character varying,
-    stripe_amount character varying,
     stripe_amount_refunded character varying,
-    stripe_application_fee character varying,
-    stripe_balance_transaction character varying,
+    stripe_application_fee_id character varying,
+    stripe_balance_transaction jsonb DEFAULT '{}'::jsonb NOT NULL,
     stripe_captured character varying,
     stripe_created character varying,
     stripe_currency character varying,
@@ -114,6 +122,9 @@ CREATE TABLE donations (
     stripe_source jsonb DEFAULT '{}'::jsonb NOT NULL,
     stripe_statement_descriptor character varying,
     stripe_status character varying,
+    message text,
+    anonymous boolean,
+    remote_ip character varying,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );
@@ -149,16 +160,16 @@ CREATE TABLE funds (
     group_fund boolean DEFAULT false,
     name character varying,
     url character varying,
-    category integer,
-    status integer,
+    category integer DEFAULT 0 NOT NULL,
+    status integer DEFAULT 0 NOT NULL,
     ends_at date,
     goal integer,
-    statement_descriptor character varying,
+    custom_statement_descriptor character varying,
     description text,
     website character varying,
     receipt_message text,
     thank_you_reply_to character varying,
-    thank_you_subject character varying,
+    thank_you_header character varying,
     thank_you_body text,
     thumbnail character varying,
     header character varying,
@@ -294,8 +305,10 @@ CREATE TABLE users (
     stripe_legal_entity jsonb DEFAULT '{}'::jsonb NOT NULL,
     stripe_verification jsonb DEFAULT '{}'::jsonb NOT NULL,
     stripe_verification_status integer,
+    stripe_currency character varying,
     encrypted_stripe_secret_key character varying,
     encrypted_stripe_publishable_key character varying,
+    status integer DEFAULT 0 NOT NULL,
     prefix character varying,
     first_name character varying,
     middle_name character varying,
@@ -325,11 +338,8 @@ CREATE TABLE users (
     dob_month character varying,
     dob_day character varying,
     dob_year character varying,
-    country character varying,
     timezone character varying,
     account_type integer DEFAULT 0,
-    current boolean DEFAULT false,
-    stripe_status integer,
     encrypted_password character varying DEFAULT ''::character varying NOT NULL,
     reset_password_token character varying,
     reset_password_sent_at timestamp without time zone,
@@ -503,6 +513,48 @@ CREATE UNIQUE INDEX index_admins_on_unlock_token ON admins USING btree (unlock_t
 
 
 --
+-- Name: index_donations_on_aggregated_fee_in_cents; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_aggregated_fee_in_cents ON donations USING btree (aggregated_fee_in_cents);
+
+
+--
+-- Name: index_donations_on_aggregated_fee_in_cents_usd; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_aggregated_fee_in_cents_usd ON donations USING btree (aggregated_fee_in_cents_usd);
+
+
+--
+-- Name: index_donations_on_amount_in_cents; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_amount_in_cents ON donations USING btree (amount_in_cents);
+
+
+--
+-- Name: index_donations_on_amount_in_cents_usd; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_amount_in_cents_usd ON donations USING btree (amount_in_cents_usd);
+
+
+--
+-- Name: index_donations_on_anonymous; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_anonymous ON donations USING btree (anonymous);
+
+
+--
+-- Name: index_donations_on_currency; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_currency ON donations USING btree (currency);
+
+
+--
 -- Name: index_donations_on_designated_to; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -524,6 +576,20 @@ CREATE INDEX index_donations_on_fund_id ON donations USING btree (fund_id);
 
 
 --
+-- Name: index_donations_on_onedonation_fee_in_cents; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_onedonation_fee_in_cents ON donations USING btree (onedonation_fee_in_cents);
+
+
+--
+-- Name: index_donations_on_onedonation_fee_in_cents_usd; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_onedonation_fee_in_cents_usd ON donations USING btree (onedonation_fee_in_cents_usd);
+
+
+--
 -- Name: index_donations_on_recipient_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -531,10 +597,10 @@ CREATE INDEX index_donations_on_recipient_id ON donations USING btree (recipient
 
 
 --
--- Name: index_donations_on_stripe_amount; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_donations_on_remote_ip; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_donations_on_stripe_amount ON donations USING btree (stripe_amount);
+CREATE INDEX index_donations_on_remote_ip ON donations USING btree (remote_ip);
 
 
 --
@@ -545,17 +611,17 @@ CREATE INDEX index_donations_on_stripe_amount_refunded ON donations USING btree 
 
 
 --
--- Name: index_donations_on_stripe_application_fee; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_donations_on_stripe_application_fee_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_donations_on_stripe_application_fee ON donations USING btree (stripe_application_fee);
+CREATE INDEX index_donations_on_stripe_application_fee_id ON donations USING btree (stripe_application_fee_id);
 
 
 --
 -- Name: index_donations_on_stripe_balance_transaction; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_donations_on_stripe_balance_transaction ON donations USING btree (stripe_balance_transaction);
+CREATE INDEX index_donations_on_stripe_balance_transaction ON donations USING gin (stripe_balance_transaction);
 
 
 --
@@ -612,6 +678,20 @@ CREATE INDEX index_donations_on_stripe_dispute ON donations USING gin (stripe_di
 --
 
 CREATE INDEX index_donations_on_stripe_failure_code ON donations USING btree (stripe_failure_code);
+
+
+--
+-- Name: index_donations_on_stripe_fee_in_cents; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_stripe_fee_in_cents ON donations USING btree (stripe_fee_in_cents);
+
+
+--
+-- Name: index_donations_on_stripe_fee_in_cents_usd; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_donations_on_stripe_fee_in_cents_usd ON donations USING btree (stripe_fee_in_cents_usd);
 
 
 --
@@ -783,6 +863,13 @@ CREATE INDEX index_metadata_on_username ON metadata USING btree (username);
 
 
 --
+-- Name: index_users_on_account_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_users_on_account_type ON users USING btree (account_type);
+
+
+--
 -- Name: index_users_on_age; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -790,17 +877,17 @@ CREATE INDEX index_users_on_age ON users USING btree (age);
 
 
 --
+-- Name: index_users_on_business_country; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_users_on_business_country ON users USING btree (business_country);
+
+
+--
 -- Name: index_users_on_confirmation_token; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_users_on_confirmation_token ON users USING btree (confirmation_token);
-
-
---
--- Name: index_users_on_country; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_users_on_country ON users USING btree (country);
 
 
 --
@@ -825,10 +912,24 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (re
 
 
 --
+-- Name: index_users_on_status; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_users_on_status ON users USING btree (status);
+
+
+--
 -- Name: index_users_on_stripe_account_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_users_on_stripe_account_id ON users USING btree (stripe_account_id);
+
+
+--
+-- Name: index_users_on_stripe_currency; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_users_on_stripe_currency ON users USING btree (stripe_currency);
 
 
 --
@@ -853,6 +954,13 @@ CREATE INDEX index_users_on_stripe_verification ON users USING gin (stripe_verif
 
 
 --
+-- Name: index_users_on_stripe_verification_status; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_users_on_stripe_verification_status ON users USING btree (stripe_verification_status);
+
+
+--
 -- Name: index_users_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -864,6 +972,13 @@ CREATE UNIQUE INDEX index_users_on_uid ON users USING btree (uid);
 --
 
 CREATE UNIQUE INDEX index_users_on_unlock_token ON users USING btree (unlock_token);
+
+
+--
+-- Name: index_users_on_user_country; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_users_on_user_country ON users USING btree (user_country);
 
 
 --
@@ -894,7 +1009,7 @@ INSERT INTO schema_migrations (version) VALUES ('20140619192648');
 
 INSERT INTO schema_migrations (version) VALUES ('20140619201224');
 
-INSERT INTO schema_migrations (version) VALUES ('20140626192517');
-
 INSERT INTO schema_migrations (version) VALUES ('20140626193722');
+
+INSERT INTO schema_migrations (version) VALUES ('20140627192517');
 

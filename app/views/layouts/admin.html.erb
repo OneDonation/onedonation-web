@@ -25,6 +25,9 @@
             </li>
             <li class="<%= nav_active_classes(user_page?) %>">
               <%= link_to "Users", admin_users_path %>
+            </li>
+            <li class="<%= nav_active_classes(donation_page?) %>">
+              <%= link_to "Donations", admin_donations_path %>
               </li>
             <li><a href="#contact">Contact</a></li>
           </ul>
@@ -34,5 +37,6 @@
     <div id="content" class="container">
       <%= yield %>
     </div>
+    <div class="modals"></div>
   </body>
 </html>
