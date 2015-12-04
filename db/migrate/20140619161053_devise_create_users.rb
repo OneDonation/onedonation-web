@@ -47,6 +47,7 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.string  :dob_year
       t.string  :timezone
       t.integer :account_type, default: 0
+
       ## Database authenticatable
       t.string :encrypted_password, null: false, default: ""
 

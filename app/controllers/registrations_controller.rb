@@ -198,18 +198,10 @@ class RegistrationsController < Devise::RegistrationsController
                                                )
                                              }
     devise_parameter_sanitizer.for(:account_update) { |u| u.permit(
+                                                      :username,
                                                       :email,
                                                       :first_name,
                                                       :last_name,
-                                                      :stripe_customer_id,
-                                                      :stripe_account_id,
-                                                      :stripe_default_source,
-                                                      :stripe_statement_descriptor,
-                                                      :stripe_tos_acceptance,
-                                                      :stripe_legal_entity,
-                                                      :stripe_verification,
-                                                      :encrypted_stripe_secret_key,
-                                                      :encrypted_stripe_publishable_key,
                                                       :prefix,
                                                       :first_name,
                                                       :middle_name,
@@ -242,7 +234,6 @@ class RegistrationsController < Devise::RegistrationsController
                                                       :country,
                                                       :timezone,
                                                       :account_type,
-                                                      :current,
                                                       :password,
                                                       :password_confirmation
                                                       )

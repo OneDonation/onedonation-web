@@ -1,13 +1,11 @@
 <header class="content-header">
   <div class="container">
     <nav class="nav">
-      <%= link_to "Profile", setting_path(setting: "profile"), class: active_classes(setting_path(setting: "profile"))  %>
-      <%= link_to "Security", setting_path(setting: "security"), class: active_classes(setting_path(setting: "security"))  %>
-      <%= link_to "Notifications", setting_path(setting: "notifications"), class: active_classes(setting_path(setting: "notifications")) %>
-      <%= link_to "Credit Cards", setting_path(setting: "credit-cards"), class: active_classes(setting_path(setting: "credit-cards")) %>
-        <%= link_to "Bank Accounts", setting_path(setting: "bank-accounts"), class: active_classes(setting_path(setting: "bank-accounts")) %>
-      <%= link_to "Subscription", setting_path(setting: "subscription"), class: active_classes(setting_path(setting: "subscription")) %>
-      <%= link_to "Organizations", setting_path(setting: "organizations"), class: active_classes(setting_path(setting: "organizations")) %>
+      <%= link_to "Profile", profile_path, class: active_classes(profile_path)  %>
+      <%= link_to "Security", profile_path(setting: "security"), class: active_classes(profile_path(setting: "security"))  %>
+      <%= link_to "Notifications", profile_path(setting: "notifications"), class: active_classes(profile_path(setting: "notifications")) %>
+      <%= link_to "Bank Accounts", profile_path(setting: "bank-accounts"), class: active_classes(profile_path(setting: "bank-accounts")) %>
+      <%= link_to "Cards", profile_path(setting: "credit-cards"), class: active_classes(profile_path(setting: "credit-cards")) %>
     </nav>
   </div>
 </header>

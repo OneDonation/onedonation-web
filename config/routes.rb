@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   ########################################################################
   # Stripe Routes
   ########################################################################
-  mount StripeEvent::Engine => "/stripe/webhooks"
+  mount StripeEvent::Engine => '/stripe/webhooks'
 
   ########################################################################
   # Admin Routes
@@ -15,15 +15,15 @@ Rails.application.routes.draw do
              controllers: {
                sessions: 'admin/sessions'
              }
-  constraints subdomain: "admin" do
-    namespace :admin, path: "" do
+  constraints subdomain: 'admin' do
+    namespace :admin, path: '' do
       devise_scope :admin do
         # Sessions
-        get    "/sign-in"   =>  "sessions#new",      as: :new_admin_session
-        post   "/sign-in"   =>  "sessions#create",   as: :new_session
-        match  "/sign-out"  =>  "sessions#destroy",  as: :destroy_admin_session, via: [:get, :delete]
-        get    "/login"     =>  redirect("sign-in")
-        get    "/logout"    =>  redirect("sign-out")
+        get    '/sign-in'   =>  'sessions#new',      as: :new_admin_session
+        post   '/sign-in'   =>  'sessions#create',   as: :new_session
+        match  '/sign-out'  =>  'sessions#destroy',  as: :destroy_admin_session, via: [:get, :delete]
+        get    '/login'     =>  redirect('sign-in')
+        get    '/logout'    =>  redirect('sign-out')
         unauthenticated :admin do
           root to: 'sessions#new', as: :unauthenticated_admin_root
         end
@@ -42,7 +42,7 @@ Rails.application.routes.draw do
       resources :fundraisers, controller: :funds
       resources :metadata
       resources :users, constraints: { username: /[0-9A-Za-z\.\-\_]+/ } do
-        resources :funds, path: "/", only: [:show]
+        resources :funds, path: '/', only: [:show]
         member do
           get '/:selected_tab' => 'users#show', as: :selected_tab, constraints: { selected_tab: /(?!edit|signup)([a-zA-Z\-]+)/ }
         end
@@ -51,7 +51,7 @@ Rails.application.routes.draw do
   end
 
   ########################################################################
-  # User Routes
+  # Devise Routes
   ########################################################################
 
   devise_for :users,
@@ -60,7 +60,7 @@ Rails.application.routes.draw do
     :registrations
   ],
   controllers: {
-    registrations: "registrations"
+    registrations: 'registrations'
   }
   as :user do
     authenticated :user do
@@ -69,35 +69,41 @@ Rails.application.routes.draw do
     unauthenticated :user do
       root to: 'devise/sessions#new', as: :root
     end
-    get   "/sign-in"   =>  redirect("login")
-    get   "/sign-out"  =>  redirect("logout")
-    get   "/login"     =>  "devise/sessions#new",      as: :new_user_session
-    post  "/login"     =>  "devise/sessions#create",   as: :user_session
-    get   "/logout"    =>  "devise/sessions#destroy",  as: :destroy_user_session
-    get   "/sign-up/"  =>  "registrations#new",         as: :new_user_registration
-    post  "/sign-up/"  =>  "registrations#create",      as: :user_registration
+    get   '/sign-in'   =>  redirect('login')
+    get   '/sign-out'  =>  redirect('logout')
+    get   '/login'     =>  'devise/sessions#new',      as: :new_user_session
+    post  '/login'     =>  'devise/sessions#create',   as: :user_session
+    get   '/logout'    =>  'devise/sessions#destroy',  as: :destroy_user_session
+    get   '/sign-up/'  =>  'registrations#new',         as: :new_user_registration
+    post  '/sign-up/'  =>  'registrations#create',      as: :user_registration
 
-    get    "/setup/(:step)"  =>  "registrations#onboarding_step",  as: :onboarding_step
-    patch  "setup/"          =>  "registrations#onboarding_progress",  as: :onboarding_progress
+    get    '/setup/(:step)'  =>  'registrations#onboarding_step',  as: :onboarding_step
+    patch  'setup/'          =>  'registrations#onboarding_progress',  as: :onboarding_progress
     patch  'update-stripe'   =>  'registrations#update_stripe', as: :update_stripe
-    get    "/settings"             => redirect("settings/profile")
-    get    "/settings/(:setting)"  => "registrations#edit",         as: :setting
-    patch  "/settings"             => "registrations#update"
+
+    ########################################################################
+    # User Dashboard Routes
+    ########################################################################
+    constraints subdomain: "app" do
+      # Donations
+      resources :fundaisers, controller: 'funds'
+      get   '/profile(/:setting)' => 'registrations#edit', as: :profile
+      put '/profile(/:setting)' => 'registrations#update', as: :update_profile
+    end
   end
+
+
 
   ########################################################################
   # Public Routes
   ########################################################################
-
-  # Application Resources
-  resources :donations
-  resources :fundraisers, controller: :funds
-  resources :metadata
-
   post '/verify/captcha' => 'donations#verify_captcha', as: :veryfiy_captcha
 
-  resources :users, constraints: { username: /[0-9A-Za-z\.\-\_]+/ }, path: '/' do
-    resources :funds, only: :show, path: '/'
+  # User
+  resources :users, constraints: { username: /[0-9A-Za-z\_]+/ }, path: '/' do
+    resources :funds, only: :show, path: '/' do
+      resources :donations, only: :create
+    end
   end
 
 end
