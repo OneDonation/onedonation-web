@@ -21,12 +21,6 @@
         <%= f.submit "Save Settings", class: "btn btn-primary" %>
       </div>
     </fieldset>
-
-    <fieldset>
-      <legend>Two-Factor Authentication</legend>
-      <p>Words about two factor auth. Nulla at nulla justo, eget luctus tortor. Nulla facilisi. Duis aliquet egestas purus in blandit. Curabitur vulputate, ligula lacinia scelerisque tempor, lacus lacus ornare ante, ac egestas est urna sit amet arcu.</p>
-    </fieldset>
-
   <% end %>
 <% when "notifications" %>
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
