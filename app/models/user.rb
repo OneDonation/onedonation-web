@@ -55,27 +55,33 @@ class User < ActiveRecord::Base
 
   # Relationships
   #########################
-  has_many :addresses,        -> { where meta_type: 0 }
-  has_many :emails,           -> { where meta_type: 1 }
-  has_many :phones,           -> { where meta_type: 2 }
-  has_many :websites,         -> { where meta_type: 3 }
-  has_many :social_accounts,  -> { where meta_type: 4 }
-  has_many :dates,            -> { where meta_type: 5 }
-  has_many :metadata, class_name: "Metadata", dependent: :destroy
-  has_many :donations, foreign_key: :recipient_id
-  has_many :contributions, class_name: "Donation", foreign_key: :donor_id
-  has_many :designations, class_name: "Donation", foreign_key: :designated_to
-  has_many :funds, foreign_key: "owner_id"
-  has_many :memberships, dependent: :destroy
-  has_many :group_funds, through: :memberships, foreign_key: :fund_id
+    # Metadata
+    has_many :metadata, class_name: "Metadata", dependent: :destroy
+    has_many :addresses,        -> { where meta_type: 0 }
+    has_many :emails,           -> { where meta_type: 1 }
+    has_many :phones,           -> { where meta_type: 2 }
+    has_many :websites,         -> { where meta_type: 3 }
+    has_many :social_accounts,  -> { where meta_type: 4 }
+    has_many :dates,            -> { where meta_type: 5 }
 
-  def donors(order_by = nil)
-    User.where(id: donations.select(:donor_id).uniq)
-  end
+    # Donations
+    has_many :donations, foreign_key: :recipient_id
+    has_many :contributions, class_name: "Donation", foreign_key: :donor_id
+    has_many :designations, class_name: "Donation", foreign_key: :designated_to
 
-  def donated_funds
-    Fund.by_donor(id)
-  end
+    def donors(order_by = nil)
+      User.where(id: donations.select(:donor_id).uniq)
+    end
+
+    def donated_funds
+      Fund.by_donor(id)
+    end
+
+    # Funds
+    has_many :funds, foreign_key: "owner_id"
+    has_many :memberships, dependent: :destroy
+    has_many :group_funds, through: :memberships, foreign_key: :fund_id
+
     # Bank Accounts
     has_many :bank_accounts
 
