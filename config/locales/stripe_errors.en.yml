@@ -1,0 +1,5 @@
+en:
+  stripe:
+    errors:
+      api_html: "It appears we're having issues connecting to our merchant partner. Please try again and contact support@onedonation.com if the issue persists."
+      rate_limit_html: "We are currently experience high demand. Please try your request again in a few minutes and contact support@onedonation.com if the issue persists"

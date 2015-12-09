@@ -80,6 +80,46 @@ ALTER SEQUENCE admins_id_seq OWNED BY admins.id;
 
 
 --
+-- Name: bank_accounts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE bank_accounts (
+    id integer NOT NULL,
+    uid character varying,
+    user_id integer,
+    nickname character varying,
+    stripe_account_id character varying,
+    stripe_bank_account_id character varying,
+    stripe_bank_account_last4 character varying,
+    stripe_fingerprint character varying,
+    country character varying,
+    currency character varying,
+    default_stripe_bank_account boolean DEFAULT false,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: bank_accounts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE bank_accounts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: bank_accounts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE bank_accounts_id_seq OWNED BY bank_accounts.id;
+
+
+--
 -- Name: donations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -391,6 +431,13 @@ ALTER TABLE ONLY admins ALTER COLUMN id SET DEFAULT nextval('admins_id_seq'::reg
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY bank_accounts ALTER COLUMN id SET DEFAULT nextval('bank_accounts_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY donations ALTER COLUMN id SET DEFAULT nextval('donations_id_seq'::regclass);
 
 
@@ -428,6 +475,14 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 
 ALTER TABLE ONLY admins
     ADD CONSTRAINT admins_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: bank_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY bank_accounts
+    ADD CONSTRAINT bank_accounts_pkey PRIMARY KEY (id);
 
 
 --
@@ -510,6 +565,69 @@ CREATE UNIQUE INDEX index_admins_on_uid ON admins USING btree (uid);
 --
 
 CREATE UNIQUE INDEX index_admins_on_unlock_token ON admins USING btree (unlock_token);
+
+
+--
+-- Name: index_bank_accounts_on_country; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bank_accounts_on_country ON bank_accounts USING btree (country);
+
+
+--
+-- Name: index_bank_accounts_on_currency; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bank_accounts_on_currency ON bank_accounts USING btree (currency);
+
+
+--
+-- Name: index_bank_accounts_on_default_stripe_bank_account; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bank_accounts_on_default_stripe_bank_account ON bank_accounts USING btree (default_stripe_bank_account);
+
+
+--
+-- Name: index_bank_accounts_on_stripe_account_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bank_accounts_on_stripe_account_id ON bank_accounts USING btree (stripe_account_id);
+
+
+--
+-- Name: index_bank_accounts_on_stripe_bank_account_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bank_accounts_on_stripe_bank_account_id ON bank_accounts USING btree (stripe_bank_account_id);
+
+
+--
+-- Name: index_bank_accounts_on_stripe_bank_account_last4; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bank_accounts_on_stripe_bank_account_last4 ON bank_accounts USING btree (stripe_bank_account_last4);
+
+
+--
+-- Name: index_bank_accounts_on_stripe_fingerprint; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bank_accounts_on_stripe_fingerprint ON bank_accounts USING btree (stripe_fingerprint);
+
+
+--
+-- Name: index_bank_accounts_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_bank_accounts_on_uid ON bank_accounts USING btree (uid);
+
+
+--
+-- Name: index_bank_accounts_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bank_accounts_on_user_id ON bank_accounts USING btree (user_id);
 
 
 --
@@ -1012,4 +1130,6 @@ INSERT INTO schema_migrations (version) VALUES ('20140619201224');
 INSERT INTO schema_migrations (version) VALUES ('20140626193722');
 
 INSERT INTO schema_migrations (version) VALUES ('20140627192517');
+
+INSERT INTO schema_migrations (version) VALUES ('20151205192835');
 

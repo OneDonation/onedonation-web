@@ -1,0 +1,9 @@
+en:
+  bank_accounts:
+    create:
+      notice: "Bank Account was successfully created."
+    update:
+      notice: "Bank Account was successfully updated."
+    destroy:
+      notice: "Bank Account was successfully deleted."
+

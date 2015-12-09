@@ -60,4 +60,20 @@ class ApplicationController < ActionController::Base
   def subdomain
     request.subdomain
   end
+
+  def redirect_back_or_default(options = {})
+    redirect_to (request.referer.present? ? :back : user_dashboard_path), options
+  end
+
+  def retrieve_stripe_account
+    begin
+      @stripe_account = Stripe::Account.retrieve(current_user.stripe_account_id)
+    rescue *[Stripe::APIConnectionError, Stripe::AuthenticationError, Stripe::APIError, Stripe::RateLimitError] => e
+      # TODO Add stripe issue details to NewRelic
+      Rails.logger.debug "Stripe during retrieval of account: #{current_user.stripe_account_id}"
+      Rails.logger.debug e.inspect
+      # Redirect and warn
+      redirect_back_or_default(notice: "Looks like we're was an error retrieving info from our merchant partner. Please try again and contact support@onedonation.com if the issue persists.")
+    end
+  end
 end

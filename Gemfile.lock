@@ -79,6 +79,8 @@ GEM
       countries (~> 0.11.0)
       sort_alphabetical (~> 1.0)
     currencies (0.4.2)
+    currency_select (0.1.5)
+      money
     currencylayer (0.0.1)
       money (~> 6.5.0)
     debug_inspector (0.0.2)
@@ -294,6 +296,7 @@ DEPENDENCIES
   coffee-rails
   coffeebeans
   country_select
+  currency_select
   currencylayer
   devise
   faker

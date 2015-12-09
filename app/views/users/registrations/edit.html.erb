@@ -39,11 +39,57 @@
     </div>
   <% end %>
 <% when "bank-accounts" %>
-  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-    <%= devise_error_messages! %>
+  <h2>Bank accounts</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Nickname</th>
+        <th>Last Four</th>
+        <th>Default</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% current_user.bank_accounts.complete.each do |bank_account| %>
+        <tr>
+          <td><%= bank_account.nickname %></td>
+          <td><%= bank_account.stripe_bank_account_last4 %></td>
+          <td><%= bank_account.default_stripe_bank_account %></td>
+          <td><%= bank_account.created_at %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <h2>New Bank Account</h2>
+  <%= form_for @bank_account do |f| %>
+    <div class="field">
+      <%= f.label :nickname, "Name" %>
+      <%= f.text_field :nickname %>
+    </div>
+    <div class="field">
+      <%= label_tag :routing_number %>
+      <%= text_field_tag :routing_number, "110000000", name: nil, id: "routing_number" %>
+    </div>
+    <div class="field">
+      <%= label_tag :account_number %>
+      <%= text_field_tag :account_number, "000123456789", name: nil, id: "account_number" %>
+    </div>
+    <div class="field">
+      <%= f.label :country %>
+      <%= f.country_select :country, stripe_country_options(request) %>
+    </div>
+    <div class="field">
+      <%= f.label :currency %>
+      <%= f.select :currency, [], {}, {} %>
+    </div>
+    <div class="field">
+      <%= f.label :default_stripe_bank_account %>
+      <%= f.check_box :default_stripe_bank_account %>
+    </div>
 
     <div class="form-actions">
-      <%= f.submit "Save Settings", class: "btn btn-primary" %>
+      <%= f.submit %>
     </div>
   <% end %>
 <% else %>
@@ -93,15 +139,3 @@
     </fieldset>
   <% end %>
 <% end %>
-
-  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-    <%= devise_error_messages! %>
-    <h3>Cancel my account</h3>
-
-    <p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
-
-    <div class="form-actions">
-      <%= f.submit "Save Settings", class: "btn btn-primary" %>
-    </div>
-  <% end %>
-

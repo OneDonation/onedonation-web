@@ -7,6 +7,10 @@ module Tokenable
     validates :uid, presence: true
   end
 
+  def to_param
+    uid
+  end
+
   protected
 
   def generate_token

@@ -85,9 +85,12 @@ Rails.application.routes.draw do
     # User Dashboard Routes
     ########################################################################
     constraints subdomain: "app" do
+      # Bank Accounts
+      resources :bank_accounts, path: "bank-accounts", except: [:index, :show]
       # Donations
       resources :fundaisers, controller: 'funds'
-      get   '/profile(/:setting)' => 'registrations#edit', as: :profile
+      # Profile
+      get '/profile(/:setting)' => 'registrations#edit', as: :profile
       put '/profile(/:setting)' => 'registrations#update', as: :update_profile
     end
   end

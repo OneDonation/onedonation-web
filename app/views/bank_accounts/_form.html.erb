@@ -1,0 +1,18 @@
+<%= simple_form_for(@bank_account) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :user_id %>
+    <%= f.input :nickname %>
+    <%= f.input :stripe_bank_account_id %>
+    <%= f.input :stripe_bank_account_last4 %>
+    <%= f.input :stripe %>
+    <%= f.input :country %>
+    <%= f.input :currency %>
+    <%= f.input :default %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

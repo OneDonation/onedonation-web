@@ -76,6 +76,8 @@ class User < ActiveRecord::Base
   def donated_funds
     Fund.by_donor(id)
   end
+    # Bank Accounts
+    has_many :bank_accounts
 
   # Scopes
   #########################

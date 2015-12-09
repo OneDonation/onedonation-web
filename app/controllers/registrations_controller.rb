@@ -70,6 +70,10 @@ class RegistrationsController < Devise::RegistrationsController
 
   # GET /resource/edit
   def edit
+    case setting
+    when "bank-accounts"
+      @bank_account = current_user.bank_accounts.build
+    end
     render :edit
   end
 
