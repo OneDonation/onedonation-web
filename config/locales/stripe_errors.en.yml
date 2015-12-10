@@ -1,5 +1,10 @@
 en:
   stripe:
     errors:
-      api_html: "It appears we're having issues connecting to our merchant partner. Please try again and contact support@onedonation.com if the issue persists."
-      rate_limit_html: "We are currently experience high demand. Please try your request again in a few minutes and contact support@onedonation.com if the issue persists"
+      invalid_request: "We weren't able to process your request. Please review the errors below and try again."
+      bad_request_html: "Your request was invalid. Please review your action, try again and contact support@onedonation.com if the issue persists."
+      unauthorized_html: "It appears we're having issues connecting to our merchant partner. Please try again and contact support@onedonation.com if the issue persists."
+      request_failed: "We were unable to complete your request with our merchant partner. Please try again and contact support@onedonation.com if the issue persists."
+      not_found_html: "We weren't able to locate the resource you were looking for. Please try again and contact support@onedonation.com if the issue persists."
+      too_many_requests_html: "We are currently experience high demand. Please try your request again in a few minutes and contact support@onedonation.com if the issue persists"
+      server_errors_html: "Our merchant partner is experiencing an issue. We apologize for this inconvenience. Please contact support@onedonation.com for more info"

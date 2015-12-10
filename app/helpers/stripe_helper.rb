@@ -1,15 +1,11 @@
 module StripeHelper
   def stripe_country_options(request)
-    request_country = HTTParty.get(URI.parse("http://api.hostip.info/country.php?ip=#{request.remote_ip.to_s}"))
-    priority_country = request_country.in?(["XX"]) ? "US" : request_country
     {
       selected: priority_country,
-      priority_countries: [priority_country],
+      priority_countries: ["US"],
       only: STRIPE_COUNTRIES
     }
   end
-
-
 
   def base_stripe_url
     base_url = "https://dashboard.stripe.com/"

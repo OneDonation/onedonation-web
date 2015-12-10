@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include RescueStripe
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
@@ -68,12 +69,9 @@ class ApplicationController < ActionController::Base
   def retrieve_stripe_account
     begin
       @stripe_account = Stripe::Account.retrieve(current_user.stripe_account_id)
-    rescue *[Stripe::APIConnectionError, Stripe::AuthenticationError, Stripe::APIError, Stripe::RateLimitError] => e
-      # TODO Add stripe issue details to NewRelic
-      Rails.logger.debug "Stripe during retrieval of account: #{current_user.stripe_account_id}"
-      Rails.logger.debug e.inspect
-      # Redirect and warn
-      redirect_back_or_default(notice: "Looks like we're was an error retrieving info from our merchant partner. Please try again and contact support@onedonation.com if the issue persists.")
+    rescue Stripe::APIError => e
+      redirect_back_or_default alert: t("stripe.errors.server_errors_html")
     end
   end
+
 end

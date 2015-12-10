@@ -1,0 +1,42 @@
+en:
+  bank_accounts:
+    create:
+      notice: "Bank Account was successfully added."
+      alert: "There was an error adding Bank Account. Please try again and contact support@onedonation.com if the issue persists."
+    update:
+      notice: "Bank Account was successfully updated."
+      alert: "There was an error updating your Bank Account. Please try again and contact support@onedonation.com if the issue persists."
+    destroy:
+      notice: "Bank Account was successfully deleted."
+      alert: "There was an error deleting your Bank Account. Please try again and contact support@onedonation.com if the issue persists."
+
+    errors:
+      funds_present: "The selected Bank Account cannot be deleted because it's still assigned to one or more funds."
+
+    # Stripe Errors
+    stripe:
+      errors:
+        server_errors_html: "Our merchant partner is experiencing an issue. We apologize for this inconvenience. Please try again and contact support@onedonation.com if the issue persists."
+  activerecord:
+    errors:
+      models:
+        alert:
+          bank_accounts:
+            stripe:
+              server_errors:
+            currency:
+              blank: 'cannot be blank'
+            country:
+              blank: 'cannot be blank'
+            nickname:
+              blank: 'cannot be blank'
+            user_id:
+              blank: 'cannot be blank'
+            currency:
+              blank: 'cannot be blank'
+            stripe_bank_account_id:
+              blank: 'cannot be blank'
+            stripe_bank_account_last4:
+              blank: 'cannot be blank'
+            stripe_fingerprint:
+              blank: 'cannot be blank'
