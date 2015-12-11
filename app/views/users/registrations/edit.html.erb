@@ -1,3 +1,10 @@
+<nav class="nav">
+  <%= link_to "Profile", profile_path(), class: active_classes(profile_path())  %>
+  <%= link_to "Security", profile_path(setting: "security"), class: active_classes(profile_path(setting: "security"))  %>
+  <%= link_to "Notifications", profile_path(setting: "notifications"), class: active_classes(profile_path(setting: "notifications")) %>
+  <%= link_to "Bank Accounts", profile_path(setting: "bank-accounts"), class: active_classes(profile_path(setting: "bank-accounts")) %>
+  <%= link_to "Credit Cards", profile_path(setting: "credit-cards"), class: active_classes(profile_path(setting: "credit-cards")) %>
+</nav>
 <% case setting %>
 <% when "security" %>
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>

@@ -14,7 +14,7 @@
 //= require jquery_ujs
 //= require jquery.turbolinks
 //= require turbolinks
-//= require ./shared/md5
+//= require ./shared/md5.min
 //= require_tree ./admin
 //= require_tree ./stripe
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Donations.io</title>
+    <title>One Donation</title>
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'https://js.stripe.com/v2/', 'data-turbolinks-track' => true  %>
@@ -15,41 +15,6 @@
   <body>
     <%= notice %>
     <%= alert %>
-    <header class="header">
-      <div class="container">
-        <div class="row">
-          <div class="col-sm-8 col-md-8">
-            <nav class="nav">
-              <%= link_to "D", "/", class: "logo" %>
-              <%= link_to "Activity", "#", class: "" %>
-            </nav>
-          </div>
-          <div class="col-sm-4 col-md-4">
-            <nav class="nav navbar-right">
-              <%= link_to "#", class: "account-switcher" do %>
-                <%= current_user.name("human") %> <%= icon("chevron-down") %>
-              <% end %>
-              <ul id="account_switcher" class="hidden">
-                <li><a href="">test</a></li>
-                <li><a href="">two</a></li>
-              </ul>
-              <%= link_to "|", "#", class: "divider" %>
-              <%= link_to destroy_user_session_path do %>
-                <%= icon("sign-out", nil, style: "margin-right:0.5em") %> Logout
-              <% end %>
-            </nav>
-          </div>
-        </div>
-        <%= render "page_header" %>
-      </div>
-    </header>
-    <div class="content">
-      <%= render "content_header" %>
-      <div class="content-body">
-        <div class="container">
-          <%= yield %>
-        </div>
-      </div>
-    </div>
+    <%= yield %>
   </body>
 </html>

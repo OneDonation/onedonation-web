@@ -1,7 +1,7 @@
 module StripeHelper
   def stripe_country_options(request)
     {
-      selected: priority_country,
+      selected: nil,
       priority_countries: ["US"],
       only: STRIPE_COUNTRIES
     }
