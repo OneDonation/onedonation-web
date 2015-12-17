@@ -61,7 +61,7 @@ class Admin::DonationsController < AdminController
   private
 
   def set_donation
-    @donation = Donation.find(params[:id])
+    @donation = Donation.find_by(uid: params[:id])
   end
 
   def donation_params

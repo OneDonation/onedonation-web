@@ -39,8 +39,8 @@
             <dt>Address:</dt>
             <dd>
               <% if @payment.source.address_line1.present? %>
-                <%= "#{@payment.source.address_line1}\n#{@payent.source.address_line2}" %><br>
-                <%= "#{@payment.source.address_city}, #{@payent.source.address_state} #{@payment.source.address_zip} #{@payent.source.address_country}" %>
+                <%= "#{@payment.source.address_line1}\n#{@payment.source.address_line2}" %><br>
+                <%= "#{@payment.source.address_city}, #{@payment.source.address_state} #{@payment.source.address_zip} #{@payment.source.address_country}" %>
               <% else %>
                 unknown
               <% end %>
