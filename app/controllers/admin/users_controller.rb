@@ -1,6 +1,6 @@
 class Admin::UsersController < AdminController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  helper_method :sort, :direction, :selected_tab
+  helper_method :selected_tab
 
   # GET /dashboard
   def dashboard
@@ -8,7 +8,7 @@ class Admin::UsersController < AdminController
 
   # GET /users
   def index
-    @users = User.all.order("#{sort} #{direction}")
+    @users = User.all.order("#{sort_column} #{sort_direction}")
   end
 
   # GET /users/:id
@@ -77,20 +77,8 @@ class Admin::UsersController < AdminController
     )
   end
 
-  def sort
-    if User.column_names.include?(params[:sort])
-      params[:sort]
-    else
-      "users.first_name"
-    end
-  end
-
-  def direction
-    if params[:direction].present? && %w[asc desc].include?(params[:direction])
-       params[:direction]
-    else
-      "asc"
-    end
+  def default_sort
+    "first_name"
   end
 
   def selected_tab

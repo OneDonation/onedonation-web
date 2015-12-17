@@ -5,7 +5,7 @@ class Admin::DonationsController < AdminController
 
   # GET /donations
   def index
-    @donations = Donation.all.includes(:recipient, :fund).order("created_at desc").page(params[:page]).per(params[:per])
+    @donations = Donation.all.includes(:donor, :recipient, :fund).order("#{order_by}").page(params[:page]).per(params[:per])
   end
 
   # GET /donations/:id
@@ -97,28 +97,16 @@ class Admin::DonationsController < AdminController
     )
   end
 
-  def sort
-    if params[:sort].present?
-      case params[:sort]
-      when "Email"
-        "users.email"
-      when "Name"
-        "users.first_name"
-      when "Fund"
-        "funds.name"
-      else
-        Donation.column_names.include?(params[:sort].downcase) ? params[:sort].downcase : "donations.created_at"
-      end
-    else
-      "donations.created_at"
-    end
+  def default_sort
+    "donations.created_at"
   end
 
-  def direction
-    if params[:direction].present? && %w[asc desc].include?(params[:direction])
-       params[:direction]
+  def order_by
+    case params[:sort]
+    when "recipient"
+      "recipients_donations.first_name #{sort_direction}, funds.name #{sort_direction}"
     else
-      "asc"
+      super
     end
   end
 end

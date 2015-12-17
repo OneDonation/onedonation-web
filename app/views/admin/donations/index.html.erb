@@ -7,12 +7,12 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Recipient</th>
-      <th>Status</th>
-      <th>Amount</th>
-      <th>Fee</th>
+      <%= sortable_header("recipient", "Recipient", admin_donations_path(sort: "recipient", direction: get_sort_direction(params[:direction]))) %>
+      <%= sortable_header("state", "Status", admin_donations_path(sort: "state", direction: get_sort_direction(params[:direction]))) %>
+      <%= sortable_header("amount_in_cents", "Amount", admin_donations_path(sort: "amount_in_cents", direction: get_sort_direction(params[:direction]))) %>
+      <%= sortable_header("aggregated_fee_in_cents", "Fee", admin_donations_path(sort: "aggregated_fee_in_cents", direction: get_sort_direction(params[:direction]))) %>
       <th>Received</th>
-      <th>IP Address</th>
+      <%= sortable_header("remote_ip", "IP Address", admin_donations_path(sort: "remote_ip", direction: get_sort_direction(params[:direction]))) %>
       <th></th>
     </tr>
   </thead>
