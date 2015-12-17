@@ -11,10 +11,12 @@ class CreateDonations < ActiveRecord::Migration
       t.integer :stripe_fee_in_cents
       t.integer :onedonation_fee_in_cents
       t.integer :aggregated_fee_in_cents
+      t.integer :received_in_cents
       t.integer :amount_in_cents_usd
       t.integer :stripe_fee_in_cents_usd
       t.integer :onedonation_fee_in_cents_usd
       t.integer :aggregated_fee_in_cents_usd
+      t.integer :received_in_cents_usd
       t.string  :stripe_customer_id
       t.string  :stripe_charge_id
       t.string  :stripe_source_id
@@ -54,10 +56,12 @@ class CreateDonations < ActiveRecord::Migration
     add_index :donations, :stripe_fee_in_cents
     add_index :donations, :onedonation_fee_in_cents
     add_index :donations, :aggregated_fee_in_cents
+    add_index :donations, :received_in_cents
     add_index :donations, :amount_in_cents_usd
     add_index :donations, :stripe_fee_in_cents_usd
     add_index :donations, :onedonation_fee_in_cents_usd
     add_index :donations, :aggregated_fee_in_cents_usd
+    add_index :donations, :received_in_cents_usd
     add_index :donations, :stripe_customer_id
     add_index :donations, :stripe_charge_id
     add_index :donations, :stripe_source_id

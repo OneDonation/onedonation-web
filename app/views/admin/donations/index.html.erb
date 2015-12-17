@@ -11,7 +11,7 @@
       <%= sortable_header("state", "Status", admin_donations_path(sort: "state", direction: get_sort_direction(params[:direction]))) %>
       <%= sortable_header("amount_in_cents", "Amount", admin_donations_path(sort: "amount_in_cents", direction: get_sort_direction(params[:direction]))) %>
       <%= sortable_header("aggregated_fee_in_cents", "Fee", admin_donations_path(sort: "aggregated_fee_in_cents", direction: get_sort_direction(params[:direction]))) %>
-      <th>Received</th>
+      <%= sortable_header("received_in_cents", "Received", admin_donations_path(sort: "received_in_cents", direction: get_sort_direction(params[:direction]))) %>
       <%= sortable_header("remote_ip", "IP Address", admin_donations_path(sort: "remote_ip", direction: get_sort_direction(params[:direction]))) %>
       <th></th>
     </tr>
@@ -37,9 +37,9 @@
           <% end %>
         </td>
         <td>
-          <%= "#{Money.new((donation.amount_in_cents - donation.aggregated_fee_in_cents), donation.stripe_currency).format} #{donation.stripe_currency.upcase}" %>
+          <%= "#{Money.new(donation.received_in_cents, donation.stripe_currency).format} #{donation.stripe_currency.upcase}" %>
           <% if donation.stripe_currency != "usd" %>
-            <br><small class="text-muted"><%= "(#{Money.new((donation.amount_in_cents_usd - donation.aggregated_fee_in_cents_usd), "USD").format} USD)" %></small>
+            <br><small class="text-muted"><%= "(#{Money.new(donation.received_in_cents_usd, "USD").format} USD)" %></small>
           <% end %>
         </td>
         <td><%= donation.remote_ip %></td>

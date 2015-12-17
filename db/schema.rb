@@ -84,10 +84,12 @@ ActiveRecord::Schema.define(version: 20151205192835) do
     t.integer  "stripe_fee_in_cents"
     t.integer  "onedonation_fee_in_cents"
     t.integer  "aggregated_fee_in_cents"
+    t.integer  "received_in_cents"
     t.integer  "amount_in_cents_usd"
     t.integer  "stripe_fee_in_cents_usd"
     t.integer  "onedonation_fee_in_cents_usd"
     t.integer  "aggregated_fee_in_cents_usd"
+    t.integer  "received_in_cents_usd"
     t.string   "stripe_customer_id"
     t.string   "stripe_charge_id"
     t.string   "stripe_source_id"
@@ -129,6 +131,8 @@ ActiveRecord::Schema.define(version: 20151205192835) do
   add_index "donations", ["fund_id"], name: "index_donations_on_fund_id", using: :btree
   add_index "donations", ["onedonation_fee_in_cents"], name: "index_donations_on_onedonation_fee_in_cents", using: :btree
   add_index "donations", ["onedonation_fee_in_cents_usd"], name: "index_donations_on_onedonation_fee_in_cents_usd", using: :btree
+  add_index "donations", ["received_in_cents"], name: "index_donations_on_received_in_cents", using: :btree
+  add_index "donations", ["received_in_cents_usd"], name: "index_donations_on_received_in_cents_usd", using: :btree
   add_index "donations", ["recipient_id"], name: "index_donations_on_recipient_id", using: :btree
   add_index "donations", ["remote_ip"], name: "index_donations_on_remote_ip", using: :btree
   add_index "donations", ["stripe_amount_refunded"], name: "index_donations_on_stripe_amount_refunded", using: :btree

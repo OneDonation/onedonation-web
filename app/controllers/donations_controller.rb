@@ -201,19 +201,23 @@ class DonationsController < ApplicationController
 
     # Set fee variables in USD
     # Round up to ensure we don't rob ourselves of a cent.
-    @fees[:stripe_fee_in_cents_usd]      = ((@fees[:amount_in_cents_usd] * 0.029) + 30).round
-    @fees[:onedonation_fee_in_cents_usd] = (@fees[:amount_in_cents_usd] * 0.03).round
-    @fees[:application_fee_in_cents_usd] = (@fees[:stripe_fee_in_cents_usd] + @fees[:onedonation_fee_in_cents_usd])
+    @fees[:stripe_fee_in_cents_usd]      = Money.new(((@fees[:amount_in_cents_usd] * 0.029) + 30).round, "USD").cents
+    @fees[:onedonation_fee_in_cents_usd] = Money.new((@fees[:amount_in_cents_usd] * 0.03).round, "USD").cents
+    @fees[:application_fee_in_cents_usd] = Money.new(@fees[:stripe_fee_in_cents_usd] + @fees[:onedonation_fee_in_cents_usd], "USD").cents
+    @fees[:received_in_cents_usd]        = Money.new(@fees[:amount_in_cents_usd] - @fees[:application_fee_in_cents_usd], "USD").cents
 
     # Set charge fees variable in relevant currency
     if currency == "USD"
       @fees[:stripe_fee_in_cents]      = @fees[:stripe_fee_in_cents_usd]
       @fees[:onedonation_fee_in_cents] = @fees[:onedonation_fee_in_cents_usd]
       @fees[:application_fee_in_cents] = @fees[:application_fee_in_cents_usd]
+      @fees[:received_in_cents]        = @fees[:received_in_cents_usd]
+
     else # Non US currency apply exchange rates to determine fees.
       @fees[:stripe_fee_in_cents]      = Money.new(@fees[:stripe_fee_in_cents_usd], "USD").exchange_to(currency).cents
       @fees[:onedonation_fee_in_cents] = Money.new(@fees[:onedonation_fee_in_cents_usd], "USD").exchange_to(currency).cents
       @fees[:application_fee_in_cents] = Money.new(@fees[:application_fee_in_cents_usd], "USD").exchange_to(currency).cents
+      @fees[:received_in_cents]        = Money.new(@fees[:received_in_cents_usd], "USD").exchange_to(currency).cents
     end
   end
 

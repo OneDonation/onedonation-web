@@ -219,13 +219,16 @@ namespace :db do
             amount_in_cents = amount * 100
             amount_in_cents_usd = amount_in_cents
             # find application fee in cents usd
-            stripe_fee_in_cents_usd = (amount_in_cents_usd * 0.029) + 30
-            od_fee_in_cents_usd = amount_in_cents_usd * 0.05
-            application_fee_in_cents_usd = (stripe_fee_in_cents_usd + od_fee_in_cents_usd).to_i
+            stripe_fee_in_cents_usd       = Money.new((amount_in_cents_usd * 0.029) + 30, "USD").cents
+            od_fee_in_cents_usd           = Money.new(amount_in_cents_usd * 0.05, "USD").cents
+            application_fee_in_cents_usd  = Money.new(stripe_fee_in_cents_usd + od_fee_in_cents_usd, "USD").cents
+            received_in_cents_usd         = Money.new(amount_in_cents_usd - application_fee_in_cents_usd, "USD").cents
+
             # convert back to starting currency
-            stripe_fee_in_cents = stripe_fee_in_cents_usd
-            od_fee_in_cents = od_fee_in_cents_usd
-            application_fee_in_cents = application_fee_in_cents_usd
+            stripe_fee_in_cents       = stripe_fee_in_cents_usd
+            od_fee_in_cents           = od_fee_in_cents_usd
+            application_fee_in_cents  = application_fee_in_cents_usd
+            received_in_cents         = received_in_cents_usd
 
             puts "charge is #{Money.new(amount_in_cents, "USD").format} in #{currency} (#{Money.new(amount_in_cents_usd, "USD").format} USD)"
             puts "application fee: #{Money.new(application_fee_in_cents, "USD").format} USD"
@@ -236,26 +239,29 @@ namespace :db do
             # convert cents to cents in USD
             amount_in_cents_usd = Money.new(amount_in_cents, currency).exchange_to("USD").cents
             # find application fee in cents usd
-            stripe_fee_in_cents_usd = (amount_in_cents_usd * 0.029) + 30
-            od_fee_in_cents_usd = amount_in_cents_usd * 0.05
-            application_fee_in_cents_usd = (stripe_fee_in_cents_usd + od_fee_in_cents_usd).to_i
+            stripe_fee_in_cents_usd       = Money.new((amount_in_cents_usd * 0.029) + 30, "USD").cents
+            od_fee_in_cents_usd           = Money.new(amount_in_cents_usd * 0.05, "USD").cents
+            application_fee_in_cents_usd  = Money.new(stripe_fee_in_cents_usd + od_fee_in_cents_usd, "USD").cents
+            received_in_cents_usd         = Money.new(amount_in_cents_usd - application_fee_in_cents_usd, "USD").cents
+
             # convert back to starting currency
-            stripe_fee_in_cents = Money.new(stripe_fee_in_cents_usd, "USD").exchange_to(currency).cents
-            od_fee_in_cents = Money.new(od_fee_in_cents_usd, "USD").exchange_to(currency).cents
-            application_fee_in_cents = Money.new(application_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            stripe_fee_in_cents       = Money.new(stripe_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            od_fee_in_cents           = Money.new(od_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            application_fee_in_cents  = Money.new(application_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            received_in_cents         = Money.new(received_in_cents_usd, "USD").exchange_to(currency).cents
 
             puts "charge is #{Money.new(amount_in_cents, currency).format} in #{currency} (#{Money.new(amount_in_cents_usd, "USD").format} USD)"
             puts "application fee: #{Money.new(application_fee_in_cents, currency).format} in #{currency} (#{Money.new(application_fee_in_cents_usd, "USD").format} USD)"
           end
           stripe_donation = Stripe::Charge.create(
-            amount: amount_in_cents,
-            currency: currency,
-            customer: donor.stripe_customer_id,
-            source: donor.stripe_default_source,
-            description: "Donation to #{owner.name("human")}",
-            application_fee: application_fee_in_cents,
-            destination: owner.stripe_account_id,
-            expand:  ['balance_transaction']
+            amount:           amount_in_cents,
+            currency:         currency,
+            customer:         donor.stripe_customer_id,
+            source:           donor.stripe_default_source,
+            description:      "Donation to #{owner.name("human")}",
+            application_fee:  application_fee_in_cents,
+            destination:      owner.stripe_account_id,
+            expand:           ['balance_transaction']
           )
           donation = fund.donations.create!(
             recipient_id:                 owner.id,
@@ -264,10 +270,12 @@ namespace :db do
             stripe_fee_in_cents:          stripe_fee_in_cents,
             onedonation_fee_in_cents:     od_fee_in_cents,
             aggregated_fee_in_cents:      application_fee_in_cents,
+            received_in_cents:            received_in_cents,
             amount_in_cents_usd:          amount_in_cents_usd,
             stripe_fee_in_cents_usd:      stripe_fee_in_cents_usd,
             onedonation_fee_in_cents_usd: od_fee_in_cents_usd,
             aggregated_fee_in_cents_usd:  application_fee_in_cents_usd,
+            received_in_cents_usd:        received_in_cents_usd,
             stripe_customer_id:           stripe_donation.customer,
             stripe_charge_id:             stripe_donation.id,
             stripe_source_id:             stripe_donation.source.id,
@@ -308,13 +316,16 @@ namespace :db do
             amount_in_cents = amount * 100
             amount_in_cents_usd = amount_in_cents
             # find application fee in cents usd
-            stripe_fee_in_cents_usd = (amount_in_cents_usd * 0.029) + 30
-            od_fee_in_cents_usd = amount_in_cents_usd * 0.05
-            application_fee_in_cents_usd = (stripe_fee_in_cents_usd + od_fee_in_cents_usd).to_i
+            stripe_fee_in_cents_usd       = Money.new((amount_in_cents_usd * 0.029) + 30, "USD").cents
+            od_fee_in_cents_usd           = Money.new(amount_in_cents_usd * 0.05, "USD").cents
+            application_fee_in_cents_usd  = Money.new(stripe_fee_in_cents_usd + od_fee_in_cents_usd, "USD").cents
+            received_in_cents             = Money.new(amount_in_cents_usd - application_fee_in_cents_usd, "USD").cents
+
             # convert back to starting currency
-            stripe_fee_in_cents = stripe_fee_in_cents_usd
-            od_fee_in_cents = od_fee_in_cents_usd
-            application_fee_in_cents = application_fee_in_cents_usd
+            stripe_fee_in_cents       = stripe_fee_in_cents_usd
+            od_fee_in_cents           = od_fee_in_cents_usd
+            application_fee_in_cents  = application_fee_in_cents_usd
+            received_in_cents_usd     = received_in_cents_usd
 
             puts "charge is #{Money.new(amount_in_cents, "USD").format} in #{currency} (#{Money.new(amount_in_cents_usd, "USD").format} USD)"
             puts "application fee: #{Money.new(application_fee_in_cents, "USD").format} USD"
@@ -325,39 +336,43 @@ namespace :db do
             # convert cents to cents in USD
             amount_in_cents_usd = Money.new(amount_in_cents, currency).exchange_to("USD").cents
             # find application fee in cents usd
-            stripe_fee_in_cents_usd = (amount_in_cents_usd * 0.029) + 30
-            od_fee_in_cents_usd = amount_in_cents_usd * 0.05
-            application_fee_in_cents_usd = (stripe_fee_in_cents_usd + od_fee_in_cents_usd).to_i
+            stripe_fee_in_cents_usd       = Money.new((amount_in_cents_usd * 0.029) + 30, "USD").cents
+            od_fee_in_cents_usd           = Money.new(amount_in_cents_usd * 0.05, "USD").cents
+            application_fee_in_cents_usd  = Money.new(stripe_fee_in_cents_usd + od_fee_in_cents_usd, "USD").cents
+            received_in_cents_usd         = Money.new(amount_in_cents_usd - application_fee_in_cents_usd, "USD").cents
+
             # convert back to starting currency
-            stripe_fee_in_cents = Money.new(stripe_fee_in_cents_usd, "USD").exchange_to(currency).cents
-            od_fee_in_cents = Money.new(od_fee_in_cents_usd, "USD").exchange_to(currency).cents
-            application_fee_in_cents = Money.new(application_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            stripe_fee_in_cents       = Money.new(stripe_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            od_fee_in_cents           = Money.new(od_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            application_fee_in_cents  = Money.new(application_fee_in_cents_usd, "USD").exchange_to(currency).cents
+            received_in_cents         = Money.new(received_in_cents_usd, "USD").exchange_to(currency).cents
 
             puts "charge is #{Money.new(amount_in_cents, currency).format} in #{currency} (#{Money.new(amount_in_cents_usd, "USD").format} USD)"
             puts "application fee: #{Money.new(application_fee_in_cents, currency).format} in #{currency} (#{Money.new(application_fee_in_cents_usd, "USD").format} USD)"
           end
           stripe_donation = Stripe::Charge.create(
-            amount: amount_in_cents,
-            currency: currency,
-            customer: donor.stripe_customer_id,
-            source: donor.stripe_default_source,
-            description: "Donation to #{owner.name("human")}",
-            application_fee: application_fee_in_cents,
-            destination: owner.stripe_account_id,
-            expand:  ['balance_transaction']
+            amount:           amount_in_cents,
+            currency:         currency,
+            customer:         donor.stripe_customer_id,
+            source:           donor.stripe_default_source,
+            description:      "Donation to #{owner.name("human")}",
+            application_fee:  application_fee_in_cents,
+            destination:      owner.stripe_account_id,
+            expand:           ['balance_transaction']
           )
           donation = fund.donations.create!(
             recipient_id:                 owner.id,
             donor_id:                     donor.id,
-            designated_to:                fund.members.sample.id,
             amount_in_cents:              amount_in_cents,
             stripe_fee_in_cents:          stripe_fee_in_cents,
             onedonation_fee_in_cents:     od_fee_in_cents,
             aggregated_fee_in_cents:      application_fee_in_cents,
+            received_in_cents:            received_in_cents,
             amount_in_cents_usd:          amount_in_cents_usd,
             stripe_fee_in_cents_usd:      stripe_fee_in_cents_usd,
             onedonation_fee_in_cents_usd: od_fee_in_cents_usd,
             aggregated_fee_in_cents_usd:  application_fee_in_cents_usd,
+            received_in_cents_usd:        received_in_cents_usd,
             stripe_customer_id:           stripe_donation.customer,
             stripe_charge_id:             stripe_donation.id,
             stripe_source_id:             stripe_donation.source.id,
