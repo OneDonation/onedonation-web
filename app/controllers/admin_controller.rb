@@ -23,6 +23,10 @@ class AdminController < ActionController::Base
 
   private
 
+  def redirect_back_or_default(options = {})
+    redirect_to (request.referer.present? ? :back : admin_dashboard_path), options
+  end
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.for(:update) { |a| a.permit(
                                                 :name,

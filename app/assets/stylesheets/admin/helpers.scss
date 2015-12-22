@@ -1,19 +1,2 @@
-dl.minimal {
-  dt {
-    font-weight: 600;
-    color: #999;
-    text-transform: uppercase;
-    font-size: 80%;
-    float: left;
-    width: 130px;
-    overflow: hidden;
-    clear: left;
-    text-align: right;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    line-height:1.85;
-  }
-  dd {
-    margin-left: 150px;
-  }
-}
+@import "admin/helpers/lists";
+@import "admin/helpers/tables";

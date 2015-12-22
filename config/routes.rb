@@ -42,10 +42,12 @@ Rails.application.routes.draw do
       resources :fundraisers, controller: :funds
       resources :metadata
       resources :users, constraints: { username: /[0-9A-Za-z\.\-\_]+/ } do
-        resources :funds, path: '/', only: [:show]
         member do
+          get '/bank-accounts' => 'users#bank_accounts', as: :bank_accounts
           get '/:selected_tab' => 'users#show', as: :selected_tab, constraints: { selected_tab: /(?!edit|signup)([a-zA-Z\-]+)/ }
         end
+        resources :fundraisers, controller: :funds
+        resources :bank_accounts, path: 'bank-accounts'
       end
     end
   end

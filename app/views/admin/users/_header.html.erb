@@ -1,0 +1,94 @@
+<h1 class="page-header"><%= entity_name(@user) %></h1>
+<div class="page-actions btn-toolbar">
+  <div class="btn-group">
+    <%= link_to "Edit", edit_admin_user_path(@user), class: "btn btn-default" %>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Account Details</h3>
+      </div>
+      <div class="panel-body">
+        <% if @user.company? %>
+          <dl class="minimal">
+            <dt>Username</dt><dd><%= @user.username %></dd>
+            <dt>Name</dt><dd><%= @user.business_name %></dd>
+            <dt>Business EIN</dt><dd><%= @user.business_tax_id %></dd>
+            <dt>Business VAT</dt><dd><%= @user.business_vat_id || "n/a" %></dd>
+            <dt>Address</dt>
+            <dd><%= entity_address(@user) %></dd>
+          </dl>
+          <legend>Business Contact Details</legend>
+        <% end %>
+        <dl class="minimal">
+          <% unless @user.company? %>
+            <dt>Username</dt><dd><%= @user.username %></dd>
+          <% end %>
+          <dt>Name</dt><dd><%= @user.name("human") %></dd>
+          <dt>Email</dt><dd><%= @user.email %></dd>
+          <dt>Address</dt>
+          <dd><%= entity_address(@user) %></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="btn-toolbar pull-right">
+          <div class="btn-group">
+            <%= link_to "Stripe Customer", stripe_customer_path(@user), class: "btn btn-default btn-xs" %>
+          </div>
+          <% if @user.has_stripe_account? %>
+            <div class="btn-group">
+              <%= link_to "Stripe Account", stripe_account_path(@user), class: "btn btn-default btn-xs" %>
+            </div>
+          <% end %>
+        </div>
+        <h3 class="panel-title">Stripe Verification</h3>
+      </div>
+      <div class="panel-body">
+        <dl class="minimal">
+          <dt>Account Type</dt><dd><%= @user.account_type.capitalize %></dd>
+          <dt>Account Status</dt><dd><%= @user.stripe_verification_status %></dd>
+          <% if @user.stripe_verification["disabled_reason"].present? %>
+            <dt>Disabled Reason</dt><dd><%= @user.stripe_verification["disabled_reason"] %></dd>
+          <% end %>
+        </dl>
+        <% if @user.stripe_verification["fields_needed"].present? %>
+          <hr>
+          <p>
+            <% if @user.stripe_verification["due_by"].present? %>
+              The following items are due by: <%= @user.stripe_verification["due_by"] %>.
+            <% else %>
+              The following items are needed but currently have no due date.
+            <% end %>
+          </p>
+          <ul>
+            <% @user.stripe_verification["fields_needed"].each do |field| %>
+              <li><%= field %></li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="nav nav-tabs nav-justified">
+  <li role="presentation" class="<%= "active" if current_page?(selected_tab_admin_user_path(@user, "funds")) %>">
+    <%= link_to "Funds", selected_tab_admin_user_path(@user, "funds") %>
+  </li>
+  <li role="presentation" class="<%= "active" if current_page?(selected_tab_admin_user_path(@user, "donations")) %>">
+    <%= link_to "Donations", selected_tab_admin_user_path(@user, "donations") %>
+  </li>
+  <li role="presentation" class="<%= "active" if current_page?(selected_tab_admin_user_path(@user, "cards")) %>">
+    <%= link_to "Cards", selected_tab_admin_user_path(@user, "cards") %>
+  </li>
+  <li role="presentation" class="<%= "active" if current_page?(bank_accounts_admin_user_path(@user)) %>">
+    <%= link_to "Bank Accounts", bank_accounts_admin_user_path(@user) %>
+  </li>
+</ul>
+<br>
+

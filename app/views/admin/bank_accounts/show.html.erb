@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>User:</strong>
+  <%= @bank_account.user_id %>
+</p>
+
+<p>
+  <strong>Nickname:</strong>
+  <%= @bank_account.nickname %>
+</p>
+
+<p>
+  <strong>Stripe bank account:</strong>
+  <%= @bank_account.stripe_bank_account_id %>
+</p>
+
+<p>
+  <strong>Stripe bank account last4:</strong>
+  <%= @bank_account.stripe_bank_account_last4 %>
+</p>
+
+<p>
+  <strong>Stripe:</strong>
+  <%= @bank_account.stripe %>
+</p>
+
+<p>
+  <strong>Country:</strong>
+  <%= @bank_account.country %>
+</p>
+
+<p>
+  <strong>Currency:</strong>
+  <%= @bank_account.currency %>
+</p>
+
+<p>
+  <strong>Default:</strong>
+  <%= @bank_account.default %>
+</p>
+
+<%= link_to 'Edit', edit_bank_account_path(@bank_account) %> |
+<%= link_to 'Back', bank_accounts_path %>

@@ -51,13 +51,13 @@ class BankAccount < ActiveRecord::Base
       else
         false
       end
-    rescue *[Stripe::APIError, Stripe::InvalidRequestError] => e
+    rescue *[Stripe::APIError, Stripe::InvalidRequestError] => exception
       case exception.http_status
-      when "400" # Bad request - The request was unacceptable, often due to missing a required parameter.
-        self.errors.add(:stripe, e.message)
-      when "404" # Not Found - The requested resource doesn't exist."
-        self.errors.add(:stripe, e.message)
-      when "500", "502", "503", '504' # Server Errors - Something went wrong on Stripe's end. (These are rare.)
+      when 400 # Bad request - The request was unacceptable, often due to missing a required parameter.
+        self.errors.add(:stripe, exception.message)
+      when 404 # Not Found - The requested resource doesn't exist."
+        self.errors.add(:stripe, exception.message)
+      when 500, 502, 503, 504 # Server Errors - Something went wrong on Stripe's end. (These are rare.)
         self.errors.add(:stripe, t("stripe.errors.server_errors_html"))
       end
       false
@@ -69,19 +69,19 @@ class BankAccount < ActiveRecord::Base
     begin
       self.attributes = params
       if valid?
-        stripe_bank_account.default_for_currency = params[:default_stripe_bank_account]
+        stripe_bank_account.default_for_currency = ['true', '1', 'yes', 'on', 't', 1, true].include?(params[:default_stripe_bank_account])
         stripe_bank_account.save
         self.save
       else
         false
       end
-    rescue *[Stripe::APIError, Stripe::InvalidRequestError] => e
+    rescue *[Stripe::APIError, Stripe::InvalidRequestError] => exception
       case exception.http_status
-      when "400" # Bad request - The request was unacceptable, often due to missing a required parameter.
-        self.errors.add(:stripe, e.message)
-      when "404" # Not Found - The requested resource doesn't exist."
-        self.errors.add(:stripe, e.message)
-      when "500", "502", "503", '504' # Server Errors - Something went wrong on Stripe's end. (These are rare.)
+      when 400 # Bad request - The request was unacceptable, often due to missing a required parameter.
+        self.errors.add(:stripe, exception.message)
+      when 404 # Not Found - The requested resource doesn't exist."
+        self.errors.add(:stripe, exception.message)
+      when 500, 502, 503, 504 # Server Errors - Something went wrong on Stripe's end. (These are rare.)
         self.errors.add(:stripe, t("stripe.errors.server_errors_html"))
       end
       false
@@ -93,7 +93,7 @@ class BankAccount < ActiveRecord::Base
     begin
       stripe_bank_account.delete
       self.destroy
-    rescue Stripe::APIError => e
+    rescue Stripe::APIError => exception
       self.errors.add(:stripe, t("stripe.errors.server_errors_html"))
       false
     end

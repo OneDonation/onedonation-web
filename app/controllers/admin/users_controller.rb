@@ -1,5 +1,5 @@
 class Admin::UsersController < AdminController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [:show, :bank_accounts, :edit, :update, :destroy]
   helper_method :selected_tab
 
   # GET /dashboard
@@ -13,6 +13,10 @@ class Admin::UsersController < AdminController
 
   # GET /users/:id
   def show
+  end
+
+  def bank_accounts
+    @bank_accounts = @user.bank_accounts
   end
 
   # GET /users/new
